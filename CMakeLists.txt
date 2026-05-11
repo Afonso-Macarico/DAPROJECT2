@@ -10,4 +10,7 @@ add_executable(DAProject2 main.cpp
         MutablePriorityQueue.h
         UFDS.h
         UFDS.cpp
-        RegisterPool.h)
+        RegisterPool.h
+        Parser.h
+        Data.h
+        Parser.cpp)
