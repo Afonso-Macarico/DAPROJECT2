@@ -2,10 +2,15 @@
 #include <sstream>
 #include "Parser.h"
 #include <map>
+#include <iostream>
 
-void Parser::parseRegs(const std::string& fl, Data& data) {
+bool Parser::parseRegs(const std::string& fl, Data& data) {
     std::ifstream file(fl);
     std::string line;
+    if (!file.is_open()) {
+        std::cerr<<"Error Cannot Open RegFile: "<<fl<<"."<< std::endl;
+        return false;
+    }
     while (std::getline(file, line)) {
         line=trim(line);
         if (line.empty() || line[0] == '#') continue;
@@ -24,14 +29,19 @@ void Parser::parseRegs(const std::string& fl, Data& data) {
                 data.algorithmPar=std::stoi(alg[1]);
         }
     }
+    return true;
 }
 
-void Parser::parseRanges(const std::string& fl, Data& data) {
+bool Parser::parseRanges(const std::string& fl, Data& data) {
     std::ifstream file(fl);
     std::map<std::string, int> webIndex;
     int webIdCount=0;
     int rangeIdCount=0;
     std::string line;
+    if (!file.is_open()) {
+        std::cerr<<"Error Cannot Open RangeFile: "<<fl<<"."<< std::endl;
+        return false;
+    }
     while (std::getline(file, line)) {
         line=trim(line);
         if (line.empty() || line[0] =='#') continue;
@@ -61,14 +71,19 @@ void Parser::parseRanges(const std::string& fl, Data& data) {
             }
         }
     }
-        for (auto& w: data.webs) w.sortRange();
+    for (auto& w: data.webs) w.sortRange();
+    return true;
 }
 
-Data Parser::parse(const std::string& rangesFile, const std::string& regsFile) {
+Data Parser::parse(const std::string& rangesFile, const std::string& regsFile, bool& regdone, bool& rangesdone) {
     Data data;
-    parseRegs(regsFile,data);
-    parseRanges(rangesFile, data);
-    return data;
+    if (!parseRegs(regsFile,data)) {
+        regdone=false;
+    };
+    if (parseRanges(rangesFile, data)) {
+        rangesdone=false;
+    };
+        return data;
 }
 
 //aux functions

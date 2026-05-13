@@ -13,4 +13,6 @@ add_executable(DAProject2 main.cpp
         RegisterPool.h
         Parser.h
         Data.h
-        Parser.cpp)
+        Parser.cpp
+        menu.cpp
+        menu.h)

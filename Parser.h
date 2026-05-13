@@ -11,11 +11,11 @@
 
 class Parser {
 public:
-    Data parse(const std::string& rangesFile, const std::string& regsFile);
+    Data parse(const std::string& rangesFile, const std::string& regsFile, bool& regdone,bool& rangesdone);
 
 private:
-    void parseRanges(const std::string& filename, Data& data);
-    void parseRegs(const std::string& filename, Data& data);
+    bool parseRanges(const std::string& filename, Data& data);
+    bool parseRegs(const std::string& filename, Data& data);
 
     std::vector<std::string> split(const std::string& s, char delimiter);
     std::string trim(const std::string& str);
