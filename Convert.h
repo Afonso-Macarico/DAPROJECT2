@@ -11,6 +11,9 @@
 class Convert {
 public:
     static Graph<int> BuildGraph(const Data& data);
+    static void allocate(Data& data);
+    static int Degree(const Web& web, const std::vector<Web>& webs);
+    static int findIdx(int id, const std::vector<Web>& webs);
 };
 
 #endif //DAPROJECT2_CONVERT_H

@@ -1,30 +1,90 @@
+//
+// Created by afons on 5/11/2026.
+//
+
 #include <fstream>
 #include <sstream>
-#include "Parser.h"
 #include <map>
-#include <iostream>
 #include <algorithm>
+#include <iostream>
+#include "Parser.h"
+
+// ─────────────────────────────────────────────
+//  Utilities
+// ─────────────────────────────────────────────
+
+std::string Parser::trim(const std::string& str) {
+    size_t first = str.find_first_not_of(" \t\r\n");
+    if (first == std::string::npos) return "";
+    size_t last = str.find_last_not_of(" \t\r\n");
+    return str.substr(first, (last - first + 1));
+}
+
+std::vector<std::string> Parser::split(const std::string& s, char delimiter) {
+    std::vector<std::string> result;
+    std::stringstream ss(s);
+    std::string token;
+    while (std::getline(ss, token, delimiter))
+        result.push_back(trim(token));
+    return result;
+}
+
+// ─────────────────────────────────────────────
+//  mergeRanges
+//  Merges LiveRanges within a web that touch or
+//  overlap (e.g. one ends at 12, next starts at 12)
+// ─────────────────────────────────────────────
+
+void Parser::mergeRanges(Web& web) {
+    if (web.ranges.size() < 2) return;
+
+    // requires sorted input — sortRange() must be called before this
+    bool merged = true;
+    while (merged) {
+        merged = false;
+        for (int i = 0; i < (int)web.ranges.size() - 1; i++) {
+            LiveRange& a = web.ranges[i];
+            LiveRange& b = web.ranges[i + 1];
+            // merge if touching (a.end == b.start) or overlapping (a.end > b.start)
+            if (a.end >= b.start) {
+                a.end = std::max(a.end, b.end);
+                web.ranges.erase(web.ranges.begin() + i + 1);
+                merged = true;
+                break;
+            }
+        }
+    }
+}
+
+// ─────────────────────────────────────────────
+//  parseRegs
+//  Reads: registers: N
+//         algorithm: basic | spilling, K | splitting, K | free
+// ─────────────────────────────────────────────
 
 bool Parser::parseRegs(const std::string& fl, Data& data) {
     std::ifstream file(fl);
-    std::string line;
     if (!file.is_open()) {
-        std::cerr<<"Error Cannot Open RegFile: "<<fl<<"."<< std::endl;
+        std::cerr << "Error Cannot Open RegFile: " << fl << "." << std::endl;
         return false;
     }
-    while (std::getline(file, line)) {
-        line=trim(line);
-        if (line.empty() || line[0] == '#') continue;
-        size_t marker=line.find(':');
-        if (marker==std::string::npos) continue;
-        std::string key= trim(line.substr(0, marker));
-        std::string val= trim(line.substr(marker+1));
 
-        if (key=="registers") {
+    std::string line;
+    while (std::getline(file, line)) {
+        line = trim(line);
+        if (line.empty() || line[0] == '#') continue;
+
+        size_t marker = line.find(':');
+        if (marker == std::string::npos) continue;
+
+        std::string key = trim(line.substr(0, marker));
+        std::string val = trim(line.substr(marker + 1));
+
+        if (key == "registers") {
             data.pool = RegisterPool(std::stoi(val));
         }
-        else if (key=="algorithm") {
-            // format is either "basic" or "spilling, 2" or "splitting, 2"
+        else if (key == "algorithm") {
+            // format: "basic" or "spilling, 2" or "splitting, 2"
             size_t comma = val.find(',');
             if (comma != std::string::npos) {
                 data.algorithm = trim(val.substr(0, comma));
@@ -37,159 +97,86 @@ bool Parser::parseRegs(const std::string& fl, Data& data) {
     return true;
 }
 
+// ─────────────────────────────────────────────
+//  parseRanges
+//  Reads: name: N+, N, N, N-  (one LiveRange per line)
+//  Same name may appear on multiple lines → same Web
+//  After parsing: sort then merge touching/overlapping ranges
+// ─────────────────────────────────────────────
+
 bool Parser::parseRanges(const std::string& fl, Data& data) {
     std::ifstream file(fl);
-    std::map<std::string, int> webIndex;
-    int webIdCount=0;
-    int rangeIdCount=0;
-    std::string line;
     if (!file.is_open()) {
-        std::cerr<<"Error Cannot Open RangeFile: "<<fl<<"."<< std::endl;
+        std::cerr << "Error Cannot Open RangeFile: " << fl << "." << std::endl;
         return false;
     }
+
+    std::map<std::string, int> webIndex;
+    int webIdCount = 0;
+    int rangeIdCount = 0;
+
+    std::string line;
     while (std::getline(file, line)) {
-        line=trim(line);
-        if (line.empty() || line[0] =='#') continue;
-        size_t marker=line.find(':');
-        if (marker== std::string::npos) continue;
-        std::string name= trim(line.substr(0, marker));
-        std::string rest=trim(line.substr(marker+1));
+        line = trim(line);
+        if (line.empty() || line[0] == '#') continue;
 
-        if (webIndex.find(name)==webIndex.end()) {
-            webIndex[name]=(int)data.webs.size();
-            data.webs.emplace_back(webIdCount,name);
-            webIdCount++;
+        size_t marker = line.find(':');
+        if (marker == std::string::npos) continue;
+
+        std::string name = trim(line.substr(0, marker));
+        std::string rest = trim(line.substr(marker + 1));
+
+        // find or create web
+        if (webIndex.find(name) == webIndex.end()) {
+            webIndex[name] = (int)data.webs.size();
+            data.webs.emplace_back(webIdCount++, name);
         }
-        Web& web=data.webs[webIndex[name]];
+        Web& web = data.webs[webIndex[name]];
 
-        // collect all program points in this line, preserving +/- markers
+        // parse comma-separated tokens: "7+", "8", "9", "10-"
         auto tokens = split(rest, ',');
-        std::vector<int> points;
-        int start=-1;
-        int end=-1;
-        bool hasStart = false;
-        bool hasEnd = false;
+        int start = -1;
 
         for (const auto& t : tokens) {
             if (t.empty()) continue;
             char op = t.back();
-            int lineNum;
             if (op == '+') {
-                lineNum = std::stoi(t.substr(0, t.size()-1));
-                if (!hasStart) { start = lineNum; hasStart = true; }
-                points.push_back(lineNum);
-            } else if (op == '-') {
-                lineNum = std::stoi(t.substr(0, t.size()-1));
-                end = lineNum;
-                hasEnd = true;
-                points.push_back(lineNum);
-            } else {
-                lineNum = std::stoi(t);
-                points.push_back(lineNum);
+                start = std::stoi(t.substr(0, t.size() - 1));
             }
-        }
-
-        if (hasStart && hasEnd) {
-            web.addRange(LiveRange(rangeIdCount, name, start, end, points));
-            rangeIdCount++;
-        }
-    }
-
-    // merge live ranges of the same variable that share any program point,
-    // or where one ends on the same line another starts (the i=i+1 edge case)
-    for (auto& w : data.webs) {
-        mergeRanges(w);
-    }
-
-    for (auto& w: data.webs) w.sortRange();
-
-    // build interference graph: one node per web, edge if any ranges interfere
-    for (auto& w : data.webs) {
-        data.InterferenceGraph.addVertex(w.id);
-    }
-    for (int i = 0; i < (int)data.webs.size(); i++) {
-        for (int j = i+1; j < (int)data.webs.size(); j++) {
-            bool interfere = false;
-            for (auto& ra : data.webs[i].ranges) {
-                for (auto& rb : data.webs[j].ranges) {
-                    if (ra.overlaps(rb)) { interfere = true; break; }
+            else if (op == '-') {
+                int end = std::stoi(t.substr(0, t.size() - 1));
+                if (start == -1) {
+                    std::cerr << "Warning: range end without start in web: " << name << std::endl;
+                    continue;
                 }
-                if (interfere) break;
+                web.addRange(LiveRange(rangeIdCount++, name, start, end));
+                start = -1;
             }
-            if (interfere) {
-                data.InterferenceGraph.addEdge(data.webs[i].id, data.webs[j].id, 1);
-                data.InterferenceGraph.addEdge(data.webs[j].id, data.webs[i].id, 1);
-            }
+            // plain intermediate tokens: no action needed
         }
+
+        if (start != -1)
+            std::cerr << "Warning: unclosed range (missing '-') in web: " << name << std::endl;
+    }
+
+    // sort then merge touching/overlapping ranges within each web
+    for (auto& w : data.webs) {
+        w.sortRange();
+        mergeRanges(w);
     }
 
     return true;
 }
 
-void Parser::mergeRanges(Web& web) {
-    bool merged = true;
-    while (merged) {
-        merged = false;
-        for (int i = 0; i < (int)web.ranges.size() && !merged; i++) {
-            for (int j = i+1; j < (int)web.ranges.size() && !merged; j++) {
-                LiveRange& a = web.ranges[i];
-                LiveRange& b = web.ranges[j];
-
-                // check if they share any point OR if one ends where the other starts
-                bool shouldMerge = (a.end == b.start) || (b.end == a.start);
-                if (!shouldMerge) {
-                    for (int p : a.points) {
-                        for (int q : b.points) {
-                            if (p == q) { shouldMerge = true; break; }
-                        }
-                        if (shouldMerge) break;
-                    }
-                }
-
-                if (shouldMerge) {
-                    // merge b into a: union of all points, update start/end
-                    for (int p : b.points) {
-                        if (std::find(a.points.begin(), a.points.end(), p) == a.points.end())
-                            a.points.push_back(p);
-                    }
-                    std::sort(a.points.begin(), a.points.end());
-                    a.start = a.points.front();
-                    a.end   = a.points.back();
-                    web.ranges.erase(web.ranges.begin() + j);
-                    merged = true;
-                }
-            }
-        }
-    }
-}
+// ─────────────────────────────────────────────
+//  Public entry point
+// ─────────────────────────────────────────────
 
 Data Parser::parse(const std::string& rangesFile, const std::string& regsFile, bool& regdone, bool& rangesdone) {
     Data data;
-    if (!parseRegs(regsFile,data)) {
-        regdone=false;
-    }
-    if (!parseRanges(rangesFile, data)) {
-        rangesdone=false;
-    }
+    if (!parseRegs(regsFile, data))
+        regdone = false;
+    if (!parseRanges(rangesFile, data))
+        rangesdone = false;
     return data;
-}
-
-//aux functions
-
-std::vector<std::string> Parser::split(const std::string& s, char delimiter) {
-    std::vector<std::string> result;
-    std::stringstream ss(s);
-    std::string token;
-
-    while (std::getline(ss, token, delimiter)) {
-        result.push_back(trim(token));
-    }
-    return result;
-}
-
-std::string Parser::trim(const std::string& str) {
-    size_t first = str.find_first_not_of(" \t\r\n");
-    if (first == std::string::npos) return "";
-    size_t last = str.find_last_not_of(" \t\r\n");
-    return str.substr(first, (last - first + 1));
 }
