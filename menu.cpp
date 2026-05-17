@@ -49,7 +49,7 @@ void runMenu(Parser parser) {
                 bool rangedone = true;
                 Data temp = parser.parse(Ranges, Registers, regdone, rangedone);
                 if (!regdone || !rangedone) {
-                    std::cerr << "Failed to load files. Check they exist in Data/." << std::endl;
+                    std::cerr << "Failed to load files. Check they exist in Data/." << std::endl<<"Press Enter to continue...";
                     std::cin.ignore(1000, '\n');
                     std::cin.get();
                     break;
@@ -93,7 +93,11 @@ void runMenu(Parser parser) {
                     break;
                 }
                 std::filesystem::create_directories("../Output");
-                std::string outPath = "../Output/allocation_" + currentRangesName + ".txt";
+                // find next available allocation number
+                int x = 1;
+                while (std::filesystem::exists("../Output/allocation_" + std::to_string(x) + ".txt"))
+                    x++;
+                std::string outPath = "../Output/allocation_" + std::to_string(x) + ".txt";
                 Convert::writeOutput(data, outPath);
                 std::cout << "Results written to " << outPath << "\nPress Enter to continue...";
                 std::cin.ignore(1000, '\n');

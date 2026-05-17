@@ -119,6 +119,10 @@ bool Parser::parseRanges(const std::string& fl, Data& data) {
     int webIdCount = 0;
     int rangeIdCount = 0;
 
+    // per-web carry-over state for ranges that span multiple input lines
+    std::map<std::string, bool>              inRangeMap;
+    std::map<std::string, std::vector<Point>> ptsMap;
+
     std::string line;
     while (std::getline(file, line)) {
         line = trim(line);
@@ -140,23 +144,23 @@ bool Parser::parseRanges(const std::string& fl, Data& data) {
         if (webIndex.find(name) == webIndex.end()) {
             webIndex[name] = (int)data.webs.size();
             data.webs.emplace_back(webIdCount++, name);
+            inRangeMap[name] = false;
+            ptsMap[name] = {};
         }
         Web& web = data.webs[webIndex[name]];
 
-        // parse comma-separated tokens: "7+", "8", "9", "10-"
-        // Build a vector<Point> for the entire range on this line,
-        // bounded by a '+' (def) token and a '-' (kill) token.
-        auto tokens = split(rest, ',');
+        // carry over state from previous lines for this variable
+        bool& inRange = inRangeMap[name];
+        std::vector<Point>& pts = ptsMap[name];
 
-        bool inRange = false;
-        std::vector<Point> pts;
+        auto tokens = split(rest, ',');
 
         for (const auto& t : tokens) {
             if (t.empty()) continue;
             char op = t.back();
 
             if (op == '+') {
-                // start of a new range segment — flush any open one first
+                // flush any open range first
                 if (inRange && !pts.empty()) {
                     web.addRange(LiveRange(rangeIdCount++, name, pts));
                     pts.clear();
@@ -167,26 +171,19 @@ bool Parser::parseRanges(const std::string& fl, Data& data) {
             }
             else if (op == '-') {
                 int lineNum = std::stoi(t.substr(0, t.size() - 1));
-                if (!inRange) {
-                    std::cerr << "Warning: range end without start in web: " << name << std::endl;
-                    continue;
-                }
                 pts.push_back(Point(lineNum, /*isDef=*/false, /*isKill=*/true));
                 web.addRange(LiveRange(rangeIdCount++, name, pts));
                 pts.clear();
                 inRange = false;
             }
             else {
-                // plain intermediate point — live-through, neither def nor kill
-                if (inRange) {
-                    int lineNum = std::stoi(t);
-                    pts.push_back(Point(lineNum, false, false));
-                }
+                // plain intermediate point — add and mark as in range
+                int lineNum = std::stoi(t);
+                pts.push_back(Point(lineNum, false, false));
+                inRange = true;
             }
         }
-
-        if (inRange)
-            std::cerr << "Warning: unclosed range (missing '-') in web: " << name << std::endl;
+        // do NOT warn here — range may continue on the next line
     }
 
     // sort then merge touching/overlapping ranges within each web
