@@ -1,0 +1,106 @@
+\doxysection{Mutable\+Priority\+Queue.\+h}
+\hypertarget{_mutable_priority_queue_8h_source}{}\label{_mutable_priority_queue_8h_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *\ MutablePriorityQueue.h}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ A\ simple\ implementation\ of\ mutable\ priority\ queues,\ required\ by\ Dijkstra\ algorithm.}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ Created\ on:\ 17/03/2018}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ João\ Pascoal\ Faria}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#ifndef\ DA\_TP\_CLASSES\_MUTABLEPRIORITYQUEUE}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#define\ DA\_TP\_CLASSES\_MUTABLEPRIORITYQUEUE}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00021\ \textcolor{keyword}{class\ }MutablePriorityQueue\ \{}
+\DoxyCodeLine{00022\ \ \ \ \ std::vector<T\ *>\ H;}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{void}\ heapifyUp(\textcolor{keywordtype}{unsigned}\ i);}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{void}\ heapifyDown(\textcolor{keywordtype}{unsigned}\ i);}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ set(\textcolor{keywordtype}{unsigned}\ i,\ T\ *\ x);}
+\DoxyCodeLine{00026\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00027\ \ \ \ \ MutablePriorityQueue();}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{void}\ insert(T\ *\ x);}
+\DoxyCodeLine{00029\ \ \ \ \ T\ *\ extractMin();}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{void}\ decreaseKey(T\ *\ x);}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordtype}{bool}\ empty();}
+\DoxyCodeLine{00032\ \};}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{comment}{//\ Index\ calculations}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#define\ parent(i)\ ((i)\ /\ 2)}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#define\ leftChild(i)\ ((i)\ *\ 2)}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00039\ MutablePriorityQueue<T>::MutablePriorityQueue()\ \{}
+\DoxyCodeLine{00040\ \ \ \ \ H.push\_back(\textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{comment}{//\ indices\ will\ be\ used\ starting\ in\ 1}}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{comment}{//\ to\ facilitate\ parent/child\ calculations}}
+\DoxyCodeLine{00043\ \}}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00046\ \textcolor{keywordtype}{bool}\ MutablePriorityQueue<T>::empty()\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordflow}{return}\ H.size()\ ==\ 1;}
+\DoxyCodeLine{00048\ \}}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00051\ T*\ MutablePriorityQueue<T>::extractMin()\ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{auto}\ x\ =\ H[1];}
+\DoxyCodeLine{00053\ \ \ \ \ H[1]\ =\ H.back();}
+\DoxyCodeLine{00054\ \ \ \ \ H.pop\_back();}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordflow}{if}(H.size()\ >\ 1)\ heapifyDown(1);}
+\DoxyCodeLine{00056\ \ \ \ \ x-\/>queueIndex\ =\ 0;}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordflow}{return}\ x;}
+\DoxyCodeLine{00058\ \}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00061\ \textcolor{keywordtype}{void}\ MutablePriorityQueue<T>::insert(T\ *x)\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ H.push\_back(x);}
+\DoxyCodeLine{00063\ \ \ \ \ heapifyUp(H.size()-\/1);}
+\DoxyCodeLine{00064\ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00067\ \textcolor{keywordtype}{void}\ MutablePriorityQueue<T>::decreaseKey(T\ *x)\ \{}
+\DoxyCodeLine{00068\ \ \ \ \ heapifyUp(x-\/>queueIndex);}
+\DoxyCodeLine{00069\ \}}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00072\ \textcolor{keywordtype}{void}\ MutablePriorityQueue<T>::heapifyUp(\textcolor{keywordtype}{unsigned}\ i)\ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keyword}{auto}\ x\ =\ H[i];}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keywordflow}{while}\ (i\ >\ 1\ \&\&\ *x\ <\ *H[parent(i)])\ \{}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ set(i,\ H[parent(i)]);}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ i\ =\ parent(i);}
+\DoxyCodeLine{00077\ \ \ \ \ \}}
+\DoxyCodeLine{00078\ \ \ \ \ set(i,\ x);}
+\DoxyCodeLine{00079\ \}}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00082\ \textcolor{keywordtype}{void}\ MutablePriorityQueue<T>::heapifyDown(\textcolor{keywordtype}{unsigned}\ i)\ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keyword}{auto}\ x\ =\ H[i];}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keywordflow}{while}\ (\textcolor{keyword}{true})\ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ k\ =\ leftChild(i);}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k\ >=\ H.size())}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k+1\ <\ H.size()\ \&\&\ *H[k+1]\ <\ *H[k])}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ ++k;\ \textcolor{comment}{//\ right\ child\ of\ i}}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ !\ (*H[k]\ <\ *x)\ )}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ set(i,\ H[k]);}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ i\ =\ k;}
+\DoxyCodeLine{00094\ \ \ \ \ \}}
+\DoxyCodeLine{00095\ \ \ \ \ set(i,\ x);}
+\DoxyCodeLine{00096\ \}}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00099\ \textcolor{keywordtype}{void}\ MutablePriorityQueue<T>::set(\textcolor{keywordtype}{unsigned}\ i,\ T\ *\ x)\ \{}
+\DoxyCodeLine{00100\ \ \ \ \ H[i]\ =\ x;}
+\DoxyCodeLine{00101\ \ \ \ \ x-\/>queueIndex\ =\ i;}
+\DoxyCodeLine{00102\ \}}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ DA\_TP\_CLASSES\_MUTABLEPRIORITYQUEUE\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

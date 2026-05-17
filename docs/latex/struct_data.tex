@@ -1,0 +1,39 @@
+\doxysection{Data Struct Reference}
+\hypertarget{struct_data}{}\label{struct_data}\index{Data@{Data}}
+
+
+Central data container passed through all pipeline stages.  
+
+
+
+
+{\ttfamily \+\#include $<$Data.\+h$>$}
+
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{struct_data_ab672f92f0c9cce359fd068bd80ce97d7}\label{struct_data_ab672f92f0c9cce359fd068bd80ce97d7} 
+std::\+vector$<$ \doxymbox{\hyperlink{struct_web}{Web}} $>$ {\bfseries webs}
+\begin{DoxyCompactList}\small\item\em All webs derived from the input live ranges. \end{DoxyCompactList}\item 
+\Hypertarget{struct_data_ae8b1f43e131055c4509fb0eeeb470d7d}\label{struct_data_ae8b1f43e131055c4509fb0eeeb470d7d} 
+\doxymbox{\hyperlink{class_register_pool}{Register\+Pool}} {\bfseries pool}
+\begin{DoxyCompactList}\small\item\em Register budget (K registers available). \end{DoxyCompactList}\item 
+\Hypertarget{struct_data_ab793d6b7b63b815e1e40b61a25e608cc}\label{struct_data_ab793d6b7b63b815e1e40b61a25e608cc} 
+std::\+string {\bfseries algorithm}
+\begin{DoxyCompactList}\small\item\em Algorithm to use:\+ "{}basic"{}, "{}spilling"{}, "{}splitting"{}, or "{}free"{}. \end{DoxyCompactList}\item 
+\Hypertarget{struct_data_a85e4e96faed7b398affd51b84e8f06d8}\label{struct_data_a85e4e96faed7b398affd51b84e8f06d8} 
+int {\bfseries algorithm\+Par} = -\/1
+\begin{DoxyCompactList}\small\item\em Numeric parameter for spilling/\+splitting (max webs to spill/\+split). \end{DoxyCompactList}\item 
+\Hypertarget{struct_data_a076ac64d351ce0fdb8a5deac4742db0f}\label{struct_data_a076ac64d351ce0fdb8a5deac4742db0f} 
+\doxymbox{\hyperlink{class_graph}{Graph}}$<$ int $>$ {\bfseries Interference\+Graph}
+\begin{DoxyCompactList}\small\item\em Interference graph; nodes are web IDs, edges indicate interference. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Central data container passed through all pipeline stages. 
+
+Holds the parsed webs, register pool, chosen algorithm and its parameter, and the interference graph built from the webs. 
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+Data.\+h\end{DoxyCompactItemize}

@@ -1,0 +1,36 @@
+\doxysection{Register\+Pool Class Reference}
+\hypertarget{class_register_pool}{}\label{class_register_pool}\index{RegisterPool@{RegisterPool}}
+
+
+Holds the register budget and provides register name formatting.  
+
+
+
+
+{\ttfamily \+\#include $<$Register\+Pool.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_register_pool_a5caa2920a3b3cb65f0022631d8750d4c}\label{class_register_pool_a5caa2920a3b3cb65f0022631d8750d4c} 
+{\bfseries Register\+Pool} ()
+\begin{DoxyCompactList}\small\item\em Default constructor (K = 0). @complexity O(1). \end{DoxyCompactList}\item 
+\Hypertarget{class_register_pool_ad52c89b6839b55942d855c0ac71f1362}\label{class_register_pool_ad52c89b6839b55942d855c0ac71f1362} 
+{\bfseries Register\+Pool} (int k)
+\begin{DoxyCompactList}\small\item\em Constructs a pool with k registers. @complexity O(1). \end{DoxyCompactList}\item 
+\Hypertarget{class_register_pool_a677fafc1323ca65258cb2817884c9ce1}\label{class_register_pool_a677fafc1323ca65258cb2817884c9ce1} 
+int {\bfseries getK} () const
+\begin{DoxyCompactList}\small\item\em Returns the number of available registers. @complexity O(1). \end{DoxyCompactList}\item 
+\Hypertarget{class_register_pool_ab0121e6aae5428295ca3d8652a630978}\label{class_register_pool_ab0121e6aae5428295ca3d8652a630978} 
+std::\+string {\bfseries get\+Register\+Name} (int id) const
+\begin{DoxyCompactList}\small\item\em Returns the name of register id (e.\+g. "{}r0"{}), or "{}\+SPILL"{} for id == -\/1. @complexity O(1). \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Holds the register budget and provides register name formatting. 
+
+The pool simply stores K (the maximum number of physical registers available) and maps integer register indices to names such as "{}r0"{}, "{}r1"{}, etc. 
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+Register\+Pool.\+h\end{DoxyCompactItemize}

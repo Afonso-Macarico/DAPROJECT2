@@ -1,0 +1,80 @@
+\doxysection{Web Struct Reference}
+\hypertarget{struct_web}{}\label{struct_web}\index{Web@{Web}}
+
+
+A web groups all live ranges of a variable that share at least one program point.  
+
+
+
+
+{\ttfamily \+\#include $<$Web.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{struct_web_a987606b36df4e3fb85080ec323a7409f}\label{struct_web_a987606b36df4e3fb85080ec323a7409f} 
+{\bfseries Web} (int \doxymbox{\hyperlink{struct_web_af59e2bcb1907d91a75a5d2598e0eb1b6}{id}}, const std::\+string \&name)
+\begin{DoxyCompactList}\small\item\em Constructs an empty web. @complexity O(1). \end{DoxyCompactList}\item 
+\Hypertarget{struct_web_ab9a2b009df6a4eab06b2bb13db94320d}\label{struct_web_ab9a2b009df6a4eab06b2bb13db94320d} 
+void {\bfseries add\+Range} (const \doxymbox{\hyperlink{struct_live_range}{Live\+Range}} \&lr)
+\begin{DoxyCompactList}\small\item\em Adds a live range and merges its points into all\+Points. @complexity O(p log p) where p is the total number of points. \end{DoxyCompactList}\item 
+\Hypertarget{struct_web_a89befb74fdf1cb3fbe56ba12030cb516}\label{struct_web_a89befb74fdf1cb3fbe56ba12030cb516} 
+void {\bfseries sort\+Range} ()
+\begin{DoxyCompactList}\small\item\em Sorts ranges by start line. @complexity O(r log r) where r = number of ranges. \end{DoxyCompactList}\item 
+\Hypertarget{struct_web_ae4932bf87f9273e11037a5dda43d4028}\label{struct_web_ae4932bf87f9273e11037a5dda43d4028} 
+void {\bfseries rebuild\+Points} ()
+\begin{DoxyCompactList}\small\item\em Rebuilds all\+Points from scratch after range modifications. @complexity O(p\texorpdfstring{$^\wedge$}{\string^}2). \end{DoxyCompactList}\item 
+bool \doxymbox{\hyperlink{struct_web_a216442a1ac641a9c10c0456ac8c2a55f}{Overlap\+Check}} (const \doxymbox{\hyperlink{struct_web}{Web}} \&other) const
+\begin{DoxyCompactList}\small\item\em Returns true if this web interferes with another. \end{DoxyCompactList}\item 
+\Hypertarget{struct_web_a35162bd2c72cc106b887ff7866ff6010}\label{struct_web_a35162bd2c72cc106b887ff7866ff6010} 
+std::\+string {\bfseries points\+To\+String} () const
+\begin{DoxyCompactList}\small\item\em Formats all\+Points as a comma-\/separated string (e.\+g. "{}1+,2,3,4-\/"{}). @complexity O(p). \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{struct_web_af59e2bcb1907d91a75a5d2598e0eb1b6}\label{struct_web_af59e2bcb1907d91a75a5d2598e0eb1b6} 
+int {\bfseries id}
+\begin{DoxyCompactList}\small\item\em Unique identifier (used as graph vertex key). \end{DoxyCompactList}\item 
+\Hypertarget{struct_web_afe369c7ea6d5ad3c78b7e32c1edcc25f}\label{struct_web_afe369c7ea6d5ad3c78b7e32c1edcc25f} 
+std::\+string {\bfseries Name}
+\begin{DoxyCompactList}\small\item\em Original variable name. \end{DoxyCompactList}\item 
+\Hypertarget{struct_web_a58b19ff3d326f425392df7334a126b29}\label{struct_web_a58b19ff3d326f425392df7334a126b29} 
+std::\+vector$<$ \doxymbox{\hyperlink{struct_live_range}{Live\+Range}} $>$ {\bfseries ranges}
+\begin{DoxyCompactList}\small\item\em Individual live ranges merged into this web. \end{DoxyCompactList}\item 
+\Hypertarget{struct_web_a80e03b130dd2d5c14be8e53ae1a725fe}\label{struct_web_a80e03b130dd2d5c14be8e53ae1a725fe} 
+std::\+vector$<$ \doxymbox{\hyperlink{struct_point}{Point}} $>$ {\bfseries all\+Points}
+\begin{DoxyCompactList}\small\item\em Sorted union of all points across all ranges. \end{DoxyCompactList}\item 
+\Hypertarget{struct_web_a8a11a58992b0434d2ffa52f75cc24904}\label{struct_web_a8a11a58992b0434d2ffa52f75cc24904} 
+int {\bfseries reg}
+\begin{DoxyCompactList}\small\item\em Assigned register index (0-\/based), or -\/1 if unassigned. \end{DoxyCompactList}\item 
+\Hypertarget{struct_web_ac3ae7f20a77fe363ab44de6ab7d16e3e}\label{struct_web_ac3ae7f20a77fe363ab44de6ab7d16e3e} 
+bool {\bfseries overflow}
+\begin{DoxyCompactList}\small\item\em True if this web is spilled to memory. \end{DoxyCompactList}\item 
+\Hypertarget{struct_web_aab20011e7e152c00748e4d4abb0ddc2b}\label{struct_web_aab20011e7e152c00748e4d4abb0ddc2b} 
+bool {\bfseries active}
+\begin{DoxyCompactList}\small\item\em Used during graph-\/colouring simplification to mark removed nodes. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A web groups all live ranges of a variable that share at least one program point. 
+
+A web is the fundamental unit for register allocation:\+ one register (or memory slot) is assigned per web. Webs are the nodes of the interference graph. 
+
+\label{doc-func-members}
+\Hypertarget{struct_web_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{struct_web_a216442a1ac641a9c10c0456ac8c2a55f}\index{Web@{Web}!OverlapCheck@{OverlapCheck}}
+\index{OverlapCheck@{OverlapCheck}!Web@{Web}}
+\doxysubsubsection{\texorpdfstring{OverlapCheck()}{OverlapCheck()}}
+{\footnotesize\ttfamily \label{struct_web_a216442a1ac641a9c10c0456ac8c2a55f} 
+bool Web::\+\+Overlap\+Check (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_web}{Web}} \&}]{other}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns true if this web interferes with another. 
+
+Two webs interfere if they share at least one program point where both are simultaneously live. A def/\+kill boundary at the same line does NOT constitute interference. @complexity O(p1 + p2) where p1, p2 are the point counts of each web. 
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+Web.\+h\end{DoxyCompactItemize}

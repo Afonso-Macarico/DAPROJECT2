@@ -1,0 +1,42 @@
+\doxysection{menu.\+h File Reference}
+\hypertarget{menu_8h}{}\label{menu_8h}\index{menu.h@{menu.h}}
+
+
+Interactive command-\/line menu for the register allocator tool.  
+
+
+{\ttfamily \+\#include $<$iostream$>$}\newline
+{\ttfamily \+\#include $<$string$>$}\newline
+{\ttfamily \+\#include "{}Parser.\+h"{}}\newline
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{menu_8h_aa4c9c5aa6a349a387fe159feb66f3f55}{run\+Menu}} (\doxymbox{\hyperlink{class_parser}{Parser}} parser)
+\begin{DoxyCompactList}\small\item\em Runs the interactive menu loop. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Interactive command-\/line menu for the register allocator tool. 
+
+
+
+\label{doc-func-members}
+\Hypertarget{menu_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{menu_8h_aa4c9c5aa6a349a387fe159feb66f3f55}\index{menu.h@{menu.h}!runMenu@{runMenu}}
+\index{runMenu@{runMenu}!menu.h@{menu.h}}
+\doxysubsubsection{\texorpdfstring{runMenu()}{runMenu()}}
+{\footnotesize\ttfamily \label{menu_8h_aa4c9c5aa6a349a387fe159feb66f3f55} 
+void run\+Menu (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_parser}{Parser}}}]{parser}{}\end{DoxyParamCaption})}
+
+
+
+Runs the interactive menu loop. 
+
+Options:\+ 1 – Load input files, build webs and interference graph. 2 – Run register allocation (algorithm auto-\/detected from config file). 3 – Export results to a numbered .txt file under Output/\+. 0 – Exit.
+
+
+\begin{DoxyParams}{Parameters}
+{\em parser} & A \doxylink{class_parser}{Parser} instance used to read input files. \\
+\hline
+\end{DoxyParams}

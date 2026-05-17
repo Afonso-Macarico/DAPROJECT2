@@ -1,0 +1,102 @@
+\doxysection{Convert Class Reference}
+\hypertarget{class_convert}{}\label{class_convert}\index{Convert@{Convert}}
+
+
+Static utility class for interference graph construction and register allocation.  
+
+
+
+
+{\ttfamily \+\#include $<$Convert.\+h$>$}
+
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \doxymbox{\hyperlink{class_graph}{Graph}}$<$ int $>$ \doxymbox{\hyperlink{class_convert_a40eb129cc254f206b58c3f7af65feb26}{Build\+Graph}} (const \doxymbox{\hyperlink{struct_data}{Data}} \&data)
+\begin{DoxyCompactList}\small\item\em Builds the interference graph from the webs in data. \end{DoxyCompactList}\item 
+static void \doxymbox{\hyperlink{class_convert_ac57ea8725e04c9d49fa67fb3cabca8bc}{allocate}} (\doxymbox{\hyperlink{struct_data}{Data}} \&data)
+\begin{DoxyCompactList}\small\item\em Dispatches to the correct allocation algorithm based on data.\+algorithm. \end{DoxyCompactList}\item 
+static void \doxymbox{\hyperlink{class_convert_aabf11effab453fd9c2db48beffb143a2}{allocate\+Spilling}} (\doxymbox{\hyperlink{struct_data}{Data}} \&data)
+\begin{DoxyCompactList}\small\item\em Greedy colouring with up to K web spills to resolve conflicts. \end{DoxyCompactList}\item 
+static void \doxymbox{\hyperlink{class_convert_aee25417f6fff814ff3d98bb16dabd2bf}{allocate\+Splitting}} (\doxymbox{\hyperlink{struct_data}{Data}} \&data)
+\begin{DoxyCompactList}\small\item\em Greedy colouring with up to K web splits to reduce interference. \end{DoxyCompactList}\item 
+static void \doxymbox{\hyperlink{class_convert_a00c1fe174550b1ebe4fdfe91c1280606}{allocate\+Free}} (\doxymbox{\hyperlink{struct_data}{Data}} \&data)
+\begin{DoxyCompactList}\small\item\em Linear-\/scan register allocation (interval-\/based, alternative approach). \end{DoxyCompactList}\item 
+\Hypertarget{class_convert_aa82721e9d9cf664a6beb37fdac826c69}\label{class_convert_aa82721e9d9cf664a6beb37fdac826c69} 
+static int {\bfseries Degree} (const \doxymbox{\hyperlink{struct_web}{Web}} \&web, const std::\+vector$<$ \doxymbox{\hyperlink{struct_web}{Web}} $>$ \&webs)
+\begin{DoxyCompactList}\small\item\em Returns the number of active neighbours of web in the current graph state. @complexity O(\+W \texorpdfstring{$\ast$}{*} p). \end{DoxyCompactList}\item 
+\Hypertarget{class_convert_ac79714523db5178a6fe1f59c1908ecd0}\label{class_convert_ac79714523db5178a6fe1f59c1908ecd0} 
+static int {\bfseries find\+Idx} (int id, const std::\+vector$<$ \doxymbox{\hyperlink{struct_web}{Web}} $>$ \&webs)
+\begin{DoxyCompactList}\small\item\em Returns the index in webs of the web with the given id, or -\/1. @complexity O(\+W). \end{DoxyCompactList}\item 
+\Hypertarget{class_convert_a36f5fd61cf4e9bb68ee407fd8821b6a7}\label{class_convert_a36f5fd61cf4e9bb68ee407fd8821b6a7} 
+static void {\bfseries write\+Output} (const \doxymbox{\hyperlink{struct_data}{Data}} \&data, const std::\+string \&output\+File)
+\begin{DoxyCompactList}\small\item\em Writes allocation results to output\+File (or stdout if empty). @complexity O(\+W). \end{DoxyCompactList}\item 
+\Hypertarget{class_convert_a415ab0565f931b26a6f90bdb18af3294}\label{class_convert_a415ab0565f931b26a6f90bdb18af3294} 
+static void {\bfseries print\+Results} (const \doxymbox{\hyperlink{struct_data}{Data}} \&data)
+\begin{DoxyCompactList}\small\item\em Prints allocation results to stdout. @complexity O(\+W). \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Static utility class for interference graph construction and register allocation. 
+
+All allocation algorithms follow the same greedy graph-\/colouring approach:\+ a simplification phase removes nodes of degree \texorpdfstring{$<$}{<} K onto a stack, then a colouring phase pops them back and assigns the lowest available colour. 
+
+\label{doc-func-members}
+\Hypertarget{class_convert_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_convert_ac57ea8725e04c9d49fa67fb3cabca8bc}\index{Convert@{Convert}!allocate@{allocate}}
+\index{allocate@{allocate}!Convert@{Convert}}
+\doxysubsubsection{\texorpdfstring{allocate()}{allocate()}}
+{\footnotesize\ttfamily \label{class_convert_ac57ea8725e04c9d49fa67fb3cabca8bc} 
+void Convert::\+allocate (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_data}{Data}} \&}]{data}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Dispatches to the correct allocation algorithm based on data.\+algorithm. 
+
+Supported values:\+ "{}basic"{}, "{}spilling"{}, "{}splitting"{}, "{}free"{}. @complexity Depends on the selected algorithm (see individual methods). \Hypertarget{class_convert_a00c1fe174550b1ebe4fdfe91c1280606}\index{Convert@{Convert}!allocateFree@{allocateFree}}
+\index{allocateFree@{allocateFree}!Convert@{Convert}}
+\doxysubsubsection{\texorpdfstring{allocateFree()}{allocateFree()}}
+{\footnotesize\ttfamily \label{class_convert_a00c1fe174550b1ebe4fdfe91c1280606} 
+void Convert::\+allocate\+Free (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_data}{Data}} \&}]{data}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Linear-\/scan register allocation (interval-\/based, alternative approach). 
+
+Sorts live ranges by start point and greedily assigns the first free register. When no register is free the range with the furthest endpoint is evicted (spilled). @complexity O(\+W \texorpdfstring{$\ast$}{*} r \texorpdfstring{$\ast$}{*} log(\+W \texorpdfstring{$\ast$}{*} r)) where r = average ranges per web. \Hypertarget{class_convert_aabf11effab453fd9c2db48beffb143a2}\index{Convert@{Convert}!allocateSpilling@{allocateSpilling}}
+\index{allocateSpilling@{allocateSpilling}!Convert@{Convert}}
+\doxysubsubsection{\texorpdfstring{allocateSpilling()}{allocateSpilling()}}
+{\footnotesize\ttfamily \label{class_convert_aabf11effab453fd9c2db48beffb143a2} 
+void Convert::\+allocate\+Spilling (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_data}{Data}} \&}]{data}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Greedy colouring with up to K web spills to resolve conflicts. 
+
+Iteratively spills the highest-\/degree web (tiebreak:\+ most points) and retries colouring until success or the spill budget is exhausted. @complexity O(\+K \texorpdfstring{$\ast$}{*} W\texorpdfstring{$^\wedge$}{\string^}3 \texorpdfstring{$\ast$}{*} p) \Hypertarget{class_convert_aee25417f6fff814ff3d98bb16dabd2bf}\index{Convert@{Convert}!allocateSplitting@{allocateSplitting}}
+\index{allocateSplitting@{allocateSplitting}!Convert@{Convert}}
+\doxysubsubsection{\texorpdfstring{allocateSplitting()}{allocateSplitting()}}
+{\footnotesize\ttfamily \label{class_convert_aee25417f6fff814ff3d98bb16dabd2bf} 
+void Convert::\+allocate\+Splitting (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_data}{Data}} \&}]{data}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Greedy colouring with up to K web splits to reduce interference. 
+
+Splits the highest-\/degree web at the gap with the fewest cross-\/web interferences, creating two smaller derived webs, then retries colouring. @complexity O(\+K \texorpdfstring{$\ast$}{*} W\texorpdfstring{$^\wedge$}{\string^}3 \texorpdfstring{$\ast$}{*} p) \Hypertarget{class_convert_a40eb129cc254f206b58c3f7af65feb26}\index{Convert@{Convert}!BuildGraph@{BuildGraph}}
+\index{BuildGraph@{BuildGraph}!Convert@{Convert}}
+\doxysubsubsection{\texorpdfstring{BuildGraph()}{BuildGraph()}}
+{\footnotesize\ttfamily \label{class_convert_a40eb129cc254f206b58c3f7af65feb26} 
+\doxymbox{\hyperlink{class_graph}{Graph}}$<$ int $>$ Convert::\+\+Build\+Graph (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_data}{Data}} \&}]{data}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Builds the interference graph from the webs in data. 
+
+Adds one vertex per web (keyed by web.\+id) and an undirected edge between any two webs whose live ranges overlap (interfere). @complexity O(\+W\texorpdfstring{$^\wedge$}{\string^}2 \texorpdfstring{$\ast$}{*} p) where W = number of webs, p = average points per web. 
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_convert_8h}{Convert.\+h}}\item 
+\doxymbox{\hyperlink{_convert_8cpp}{Convert.\+cpp}}\end{DoxyCompactItemize}

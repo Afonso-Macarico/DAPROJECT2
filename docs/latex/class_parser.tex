@@ -1,0 +1,54 @@
+\doxysection{Parser Class Reference}
+\hypertarget{class_parser}{}\label{class_parser}\index{Parser@{Parser}}
+
+
+Reads and parses the two input files, building the \doxylink{struct_data}{Data} structure.  
+
+
+
+
+{\ttfamily \+\#include $<$Parser.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{struct_data}{Data}} \doxymbox{\hyperlink{class_parser_a26bd8c281324512af5c03b8b1d312d30}{parse}} (const std::\+string \&ranges\+File, const std::\+string \&regs\+File, bool \&regdone, bool \&rangesdone)
+\begin{DoxyCompactList}\small\item\em Parses both input files and returns a populated \doxylink{struct_data}{Data} object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Reads and parses the two input files, building the \doxylink{struct_data}{Data} structure. 
+
+\label{doc-func-members}
+\Hypertarget{class_parser_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_parser_a26bd8c281324512af5c03b8b1d312d30}\index{Parser@{Parser}!parse@{parse}}
+\index{parse@{parse}!Parser@{Parser}}
+\doxysubsubsection{\texorpdfstring{parse()}{parse()}}
+{\footnotesize\ttfamily \label{class_parser_a26bd8c281324512af5c03b8b1d312d30} 
+\doxymbox{\hyperlink{struct_data}{Data}} Parser::\+parse (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{ranges\+File}{, }\item[{const std::\+string \&}]{regs\+File}{, }\item[{bool \&}]{regdone}{, }\item[{bool \&}]{rangesdone}{}\end{DoxyParamCaption})}
+
+
+
+Parses both input files and returns a populated \doxylink{struct_data}{Data} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ranges\+File} & Path to the live-\/ranges text file. \\
+\hline
+{\em regs\+File} & Path to the registers/\+algorithm config file. \\
+\hline
+{\em regdone} & Set to false if the registers file could not be opened. \\
+\hline
+{\em rangesdone} & Set to false if the ranges file could not be opened. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Populated \doxylink{struct_data}{Data} with webs, pool and algorithm settings. @complexity O(\+L \texorpdfstring{$\ast$}{*} p log p) where L = number of input lines, p = points per web. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_parser_8h}{Parser.\+h}}\item 
+\doxymbox{\hyperlink{_parser_8cpp}{Parser.\+cpp}}\end{DoxyCompactItemize}

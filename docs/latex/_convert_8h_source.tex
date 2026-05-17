@@ -1,0 +1,38 @@
+\doxysection{Convert.\+h}
+\hypertarget{_convert_8h_source}{}\label{_convert_8h_source}\doxymbox{\hyperlink{_convert_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#ifndef\ DAPROJECT2\_CONVERT\_H}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#define\ DAPROJECT2\_CONVERT\_H}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ "{}Data.h"{}}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_graph_8h}{Graph.h}}"{}}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00019\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_convert}{Convert}}\ \{}
+\DoxyCodeLine{00020\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{class_graph}{Graph<int>}}\ \doxymbox{\hyperlink{class_convert_a40eb129cc254f206b58c3f7af65feb26}{BuildGraph}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_data}{Data}}\&\ data);}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_convert_ac57ea8725e04c9d49fa67fb3cabca8bc}{allocate}}(\doxymbox{\hyperlink{struct_data}{Data}}\&\ data);}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_convert_aabf11effab453fd9c2db48beffb143a2}{allocateSpilling}}(\doxymbox{\hyperlink{struct_data}{Data}}\&\ data);}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_convert_aee25417f6fff814ff3d98bb16dabd2bf}{allocateSplitting}}(\doxymbox{\hyperlink{struct_data}{Data}}\&\ data);}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_convert_a00c1fe174550b1ebe4fdfe91c1280606}{allocateFree}}(\doxymbox{\hyperlink{struct_data}{Data}}\&\ data);}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_convert_aa82721e9d9cf664a6beb37fdac826c69}{Degree}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_web}{Web}}\&\ web,\ \textcolor{keyword}{const}\ std::vector<Web>\&\ webs);}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_convert_ac79714523db5178a6fe1f59c1908ecd0}{findIdx}}(\textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ std::vector<Web>\&\ webs);}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_convert_a36f5fd61cf4e9bb68ee407fd8821b6a7}{writeOutput}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_data}{Data}}\&\ data,\ \textcolor{keyword}{const}\ std::string\&\ outputFile);}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_convert_a415ab0565f931b26a6f90bdb18af3294}{printResults}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_data}{Data}}\&\ data);}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{bool}\ tryColor(\doxymbox{\hyperlink{struct_data}{Data}}\&\ data);}
+\DoxyCodeLine{00096\ \};}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//DAPROJECT2\_CONVERT\_H}}
+
+\end{DoxyCode}

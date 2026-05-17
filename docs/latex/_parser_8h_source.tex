@@ -1,0 +1,31 @@
+\doxysection{Parser.\+h}
+\hypertarget{_parser_8h_source}{}\label{_parser_8h_source}\doxymbox{\hyperlink{_parser_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#ifndef\ DAPROJECT2\_PARSER\_H}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#define\ DAPROJECT2\_PARSER\_H}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ "{}Data.h"{}}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00016\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_parser}{Parser}}\ \{}
+\DoxyCodeLine{00017\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00027\ \ \ \ \ \doxymbox{\hyperlink{struct_data}{Data}}\ \doxymbox{\hyperlink{class_parser_a26bd8c281324512af5c03b8b1d312d30}{parse}}(\textcolor{keyword}{const}\ std::string\&\ rangesFile,\ \textcolor{keyword}{const}\ std::string\&\ regsFile,\ \textcolor{keywordtype}{bool}\&\ regdone,\ \textcolor{keywordtype}{bool}\&\ rangesdone);}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{bool}\ parseRanges(\textcolor{keyword}{const}\ std::string\&\ filename,\ \doxymbox{\hyperlink{struct_data}{Data}}\&\ data);}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{bool}\ parseRegs(\textcolor{keyword}{const}\ std::string\&\ filename,\ \doxymbox{\hyperlink{struct_data}{Data}}\&\ data);}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{void}\ mergeRanges(\doxymbox{\hyperlink{struct_web}{Web}}\&\ web);}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00052\ \ \ \ \ std::vector<std::string>\ split(\textcolor{keyword}{const}\ std::string\&\ s,\ \textcolor{keywordtype}{char}\ delimiter);}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00055\ \ \ \ \ std::string\ trim(\textcolor{keyword}{const}\ std::string\&\ str);}
+\DoxyCodeLine{00056\ \};}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//DAPROJECT2\_PARSER\_H}}
+
+\end{DoxyCode}

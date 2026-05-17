@@ -1,0 +1,80 @@
+\doxysection{Web.\+h}
+\hypertarget{_web_8h_source}{}\label{_web_8h_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ DAPROJECT2\_WEB\_H}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ DAPROJECT2\_WEB\_H}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <sstream>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ "{}LiveRange.h"{}}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00016\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_web_a987606b36df4e3fb85080ec323a7409f}{Web}}\ \{}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{struct_web_af59e2bcb1907d91a75a5d2598e0eb1b6}{id}};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00018\ \ \ \ \ std::string\ \doxymbox{\hyperlink{struct_web_afe369c7ea6d5ad3c78b7e32c1edcc25f}{Name}};\ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00019\ \ \ \ \ std::vector<LiveRange>\ \doxymbox{\hyperlink{struct_web_a58b19ff3d326f425392df7334a126b29}{ranges}};\ }
+\DoxyCodeLine{00020\ \ \ \ \ std::vector<Point>\ \doxymbox{\hyperlink{struct_web_a80e03b130dd2d5c14be8e53ae1a725fe}{allPoints}};\ \ }
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \doxymbox{\hyperlink{struct_web_a8a11a58992b0434d2ffa52f75cc24904}{reg}};\ \ \ \ \ \ \ }
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_web_ac3ae7f20a77fe363ab44de6ab7d16e3e}{overflow}};\ \ }
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_web_aab20011e7e152c00748e4d4abb0ddc2b}{active}};\ \ \ \ }
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00026\ \ \ \ \ \doxymbox{\hyperlink{struct_web_a987606b36df4e3fb85080ec323a7409f}{Web}}(\textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ std::string\&\ name):\ \doxymbox{\hyperlink{struct_web_af59e2bcb1907d91a75a5d2598e0eb1b6}{id}}(\doxymbox{\hyperlink{struct_web_af59e2bcb1907d91a75a5d2598e0eb1b6}{id}}),\ \doxymbox{\hyperlink{struct_web_afe369c7ea6d5ad3c78b7e32c1edcc25f}{Name}}(name),\ \doxymbox{\hyperlink{struct_web_a8a11a58992b0434d2ffa52f75cc24904}{reg}}(-\/1),\ \doxymbox{\hyperlink{struct_web_ac3ae7f20a77fe363ab44de6ab7d16e3e}{overflow}}(false),\ \doxymbox{\hyperlink{struct_web_aab20011e7e152c00748e4d4abb0ddc2b}{active}}(true)\ \{\}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{struct_web_ab9a2b009df6a4eab06b2bb13db94320d}{addRange}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_live_range}{LiveRange}}\&\ lr)\ \{}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_web_a58b19ff3d326f425392df7334a126b29}{ranges}}.push\_back(lr);}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ p\ :\ lr.\doxymbox{\hyperlink{struct_live_range_ac10e7fec86f6190dcbed8da7f0dbc59e}{points}})}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \ \ \ \ mergePoint(\doxymbox{\hyperlink{struct_web_a80e03b130dd2d5c14be8e53ae1a725fe}{allPoints}},\ p);}
+\DoxyCodeLine{00036\ \ \ \ \ \}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{struct_web_a89befb74fdf1cb3fbe56ba12030cb516}{sortRange}}()\ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ std::sort(\doxymbox{\hyperlink{struct_web_a58b19ff3d326f425392df7334a126b29}{ranges}}.begin(),\ \doxymbox{\hyperlink{struct_web_a58b19ff3d326f425392df7334a126b29}{ranges}}.end(),\ \doxymbox{\hyperlink{struct_live_range_a35235302cc89b4630a2ab9cda307d2d0}{LiveRange::comp}});}
+\DoxyCodeLine{00041\ \ \ \ \ \}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{struct_web_ae4932bf87f9273e11037a5dda43d4028}{rebuildPoints}}()\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_web_a80e03b130dd2d5c14be8e53ae1a725fe}{allPoints}}.clear();}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ lr\ :\ \doxymbox{\hyperlink{struct_web_a58b19ff3d326f425392df7334a126b29}{ranges}})}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ p\ :\ lr.points)}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mergePoint(\doxymbox{\hyperlink{struct_web_a80e03b130dd2d5c14be8e53ae1a725fe}{allPoints}},\ p);}
+\DoxyCodeLine{00049\ \ \ \ \ \}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_web_a216442a1ac641a9c10c0456ac8c2a55f}{OverlapCheck}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_web_a987606b36df4e3fb85080ec323a7409f}{Web}}\&\ other)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ i\ =\ 0,\ j\ =\ 0;}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (i\ <\ (\textcolor{keywordtype}{int})\doxymbox{\hyperlink{struct_web_a80e03b130dd2d5c14be8e53ae1a725fe}{allPoints}}.size()\ \&\&\ j\ <\ (\textcolor{keywordtype}{int})other.\doxymbox{\hyperlink{struct_web_a80e03b130dd2d5c14be8e53ae1a725fe}{allPoints}}.size())\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ \ \ \ \ \ (\doxymbox{\hyperlink{struct_web_a80e03b130dd2d5c14be8e53ae1a725fe}{allPoints}}[i].line\ <\ other.\doxymbox{\hyperlink{struct_web_a80e03b130dd2d5c14be8e53ae1a725fe}{allPoints}}[j].line)\ \{\ ++i;\ \textcolor{keywordflow}{continue};\ \}}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (other.\doxymbox{\hyperlink{struct_web_a80e03b130dd2d5c14be8e53ae1a725fe}{allPoints}}[j].line\ <\ \doxymbox{\hyperlink{struct_web_a80e03b130dd2d5c14be8e53ae1a725fe}{allPoints}}[i].line)\ \{\ ++j;\ \textcolor{keywordflow}{continue};\ \}}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_point}{Point}}\&\ p\ =\ \doxymbox{\hyperlink{struct_web_a80e03b130dd2d5c14be8e53ae1a725fe}{allPoints}}[i];}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_point}{Point}}\&\ q\ =\ other.\doxymbox{\hyperlink{struct_web_a80e03b130dd2d5c14be8e53ae1a725fe}{allPoints}}[j];}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!(p.\doxymbox{\hyperlink{struct_point_a8cc4b7ed7fc892ba38d23b98175e2ee6}{isKill}}\ \&\&\ q.\doxymbox{\hyperlink{struct_point_a546f07caac0c95094f741946a5157472}{isDef}})\ \&\&\ !(q.\doxymbox{\hyperlink{struct_point_a8cc4b7ed7fc892ba38d23b98175e2ee6}{isKill}}\ \&\&\ p.\doxymbox{\hyperlink{struct_point_a546f07caac0c95094f741946a5157472}{isDef}}))}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ ++i;\ ++j;}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00071\ \ \ \ \ \}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00077\ \ \ \ \ std::string\ \doxymbox{\hyperlink{struct_web_a35162bd2c72cc106b887ff7866ff6010}{pointsToString}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ std::ostringstream\ oss;}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ first\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ p\ :\ \doxymbox{\hyperlink{struct_web_a80e03b130dd2d5c14be8e53ae1a725fe}{allPoints}})\ \{}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!first)\ oss\ <<\ \textcolor{charliteral}{','};}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ first\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ oss\ <<\ p.line;}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.isDef)\ \ oss\ <<\ \textcolor{charliteral}{'+'};}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.isKill)\ oss\ <<\ \textcolor{charliteral}{'-\/'};}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ oss.str();}
+\DoxyCodeLine{00088\ \ \ \ \ \}}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ mergePoint(std::vector<Point>\&\ vec,\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_point}{Point}}\&\ p)\ \{}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ std::lower\_bound(vec.begin(),\ vec.end(),\ p);}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ !=\ vec.end()\ \&\&\ it-\/>line\ ==\ p.\doxymbox{\hyperlink{struct_point_a38c212de9efe893cf7150125a5a27131}{line}})}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ it-\/>absorb(p);}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vec.insert(it,\ p);}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00102\ \};}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ DAPROJECT2\_WEB\_H}}
+
+\end{DoxyCode}

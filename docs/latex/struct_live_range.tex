@@ -1,0 +1,80 @@
+\doxysection{Live\+Range Struct Reference}
+\hypertarget{struct_live_range}{}\label{struct_live_range}\index{LiveRange@{LiveRange}}
+
+
+A single contiguous live range for a variable.  
+
+
+
+
+{\ttfamily \+\#include $<$Live\+Range.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{struct_live_range_a511ba8c7e7aa35edce3e1c5e16797352}\label{struct_live_range_a511ba8c7e7aa35edce3e1c5e16797352} 
+{\bfseries Live\+Range} (int \doxymbox{\hyperlink{struct_live_range_afff6d9cbf9cb91add26718da3e9fffde}{id}}, const std::\+string \&name, std::\+vector$<$ \doxymbox{\hyperlink{struct_point}{Point}} $>$ pts)
+\begin{DoxyCompactList}\small\item\em Constructs a \doxylink{struct_live_range}{Live\+Range} and sorts/\+deduplicates its points. @complexity O(p log p) where p is the number of points. \end{DoxyCompactList}\item 
+\Hypertarget{struct_live_range_ab225d6028d2357611f31b1ca751cac18}\label{struct_live_range_ab225d6028d2357611f31b1ca751cac18} 
+void {\bfseries sort\+And\+Dedupe} ()
+\begin{DoxyCompactList}\small\item\em Sorts points by line and merges duplicates via absorb(). @complexity O(p log p). \end{DoxyCompactList}\item 
+\Hypertarget{struct_live_range_a8cd2e210dec3fcdf8a4755dee478bcb6}\label{struct_live_range_a8cd2e210dec3fcdf8a4755dee478bcb6} 
+void {\bfseries recompute\+Bounds} ()
+\begin{DoxyCompactList}\small\item\em Updates start and end from the current points list. @complexity O(1). \end{DoxyCompactList}\item 
+\Hypertarget{struct_live_range_a3878f4f7e7ea8236fb900aea1549f466}\label{struct_live_range_a3878f4f7e7ea8236fb900aea1549f466} 
+bool {\bfseries contains\+Line} (int l) const
+\begin{DoxyCompactList}\small\item\em Returns true if line l is in this range. @complexity O(p). \end{DoxyCompactList}\item 
+\Hypertarget{struct_live_range_ae91f30caf6d653722501b09b93f362a8}\label{struct_live_range_ae91f30caf6d653722501b09b93f362a8} 
+const \doxymbox{\hyperlink{struct_point}{Point}} \texorpdfstring{$\ast$}{*} {\bfseries get\+Point} (int l) const
+\begin{DoxyCompactList}\small\item\em Returns a pointer to the \doxylink{struct_point}{Point} at line l, or nullptr. @complexity O(p). \end{DoxyCompactList}\item 
+bool \doxymbox{\hyperlink{struct_live_range_a4add90b48afd669f7a2c27ebb75066e4}{overlaps}} (const \doxymbox{\hyperlink{struct_live_range}{Live\+Range}} \&other) const
+\begin{DoxyCompactList}\small\item\em Returns true if this range overlaps with another. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{struct_live_range_a35235302cc89b4630a2ab9cda307d2d0}\label{struct_live_range_a35235302cc89b4630a2ab9cda307d2d0} 
+static bool {\bfseries comp} (const \doxymbox{\hyperlink{struct_live_range}{Live\+Range}} \&a, const \doxymbox{\hyperlink{struct_live_range}{Live\+Range}} \&b)
+\begin{DoxyCompactList}\small\item\em Comparator:\+ orders ranges by start, then by end. @complexity O(1). \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{struct_live_range_afff6d9cbf9cb91add26718da3e9fffde}\label{struct_live_range_afff6d9cbf9cb91add26718da3e9fffde} 
+int {\bfseries id}
+\begin{DoxyCompactList}\small\item\em Unique identifier. \end{DoxyCompactList}\item 
+\Hypertarget{struct_live_range_a5c7fc192ca4d85374db70e2485b1801d}\label{struct_live_range_a5c7fc192ca4d85374db70e2485b1801d} 
+std::\+string {\bfseries Name}
+\begin{DoxyCompactList}\small\item\em Variable name this range belongs to. \end{DoxyCompactList}\item 
+\Hypertarget{struct_live_range_ac10e7fec86f6190dcbed8da7f0dbc59e}\label{struct_live_range_ac10e7fec86f6190dcbed8da7f0dbc59e} 
+std::\+vector$<$ \doxymbox{\hyperlink{struct_point}{Point}} $>$ {\bfseries points}
+\begin{DoxyCompactList}\small\item\em Sorted list of program points in this range. \end{DoxyCompactList}\item 
+\Hypertarget{struct_live_range_a17d98a53ee8886e5006903bdbb6ca51e}\label{struct_live_range_a17d98a53ee8886e5006903bdbb6ca51e} 
+int {\bfseries start}
+\begin{DoxyCompactList}\small\item\em First line number of the range. \end{DoxyCompactList}\item 
+\Hypertarget{struct_live_range_a1b20bc0723e2f31020def3b7a98a8214}\label{struct_live_range_a1b20bc0723e2f31020def3b7a98a8214} 
+int {\bfseries end}
+\begin{DoxyCompactList}\small\item\em Last line number of the range. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A single contiguous live range for a variable. 
+
+Stores the sorted list of Points from the first definition to the last use. Multiple Live\+Ranges for the same variable are merged into a \doxylink{struct_web}{Web}. 
+
+\label{doc-func-members}
+\Hypertarget{struct_live_range_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{struct_live_range_a4add90b48afd669f7a2c27ebb75066e4}\index{LiveRange@{LiveRange}!overlaps@{overlaps}}
+\index{overlaps@{overlaps}!LiveRange@{LiveRange}}
+\doxysubsubsection{\texorpdfstring{overlaps()}{overlaps()}}
+{\footnotesize\ttfamily \label{struct_live_range_a4add90b48afd669f7a2c27ebb75066e4} 
+bool Live\+Range::\+overlaps (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_live_range}{Live\+Range}} \&}]{other}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns true if this range overlaps with another. 
+
+Two ranges do NOT overlap at a shared line if one ends (is\+Kill) and the other starts (is\+Def) there — the register is free between them. @complexity O(p) 
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+Live\+Range.\+h\end{DoxyCompactItemize}

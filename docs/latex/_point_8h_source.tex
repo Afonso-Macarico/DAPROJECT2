@@ -1,0 +1,28 @@
+\doxysection{Point.\+h}
+\hypertarget{_point_8h_source}{}\label{_point_8h_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ DAPROJECT2\_POINT\_H}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ DAPROJECT2\_POINT\_H}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00015\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_point_a72d3cd01c5ee7145b98c5f898fe7f1e1}{Point}}\ \{}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{int}\ \ \doxymbox{\hyperlink{struct_point_a38c212de9efe893cf7150125a5a27131}{line}};\ \ \ \ }
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_point_a546f07caac0c95094f741946a5157472}{isDef}};\ \ \ }
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_point_a8cc4b7ed7fc892ba38d23b98175e2ee6}{isKill}};\ \ }
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00021\ \ \ \ \ \doxymbox{\hyperlink{struct_point_a72d3cd01c5ee7145b98c5f898fe7f1e1}{Point}}(\textcolor{keywordtype}{int}\ l,\ \textcolor{keywordtype}{bool}\ d,\ \textcolor{keywordtype}{bool}\ k)\ :\ \doxymbox{\hyperlink{struct_point_a38c212de9efe893cf7150125a5a27131}{line}}(l),\ \doxymbox{\hyperlink{struct_point_a546f07caac0c95094f741946a5157472}{isDef}}(d),\ \doxymbox{\hyperlink{struct_point_a8cc4b7ed7fc892ba38d23b98175e2ee6}{isKill}}(k)\ \{\}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{struct_point_a6178985f9eabd11a7b209e4994047207}{absorb}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_point_a72d3cd01c5ee7145b98c5f898fe7f1e1}{Point}}\&\ o)\ \{}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_point_a546f07caac0c95094f741946a5157472}{isDef}}\ \ =\ \doxymbox{\hyperlink{struct_point_a546f07caac0c95094f741946a5157472}{isDef}}\ \ ||\ o.\doxymbox{\hyperlink{struct_point_a546f07caac0c95094f741946a5157472}{isDef}};}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_point_a8cc4b7ed7fc892ba38d23b98175e2ee6}{isKill}}\ =\ \doxymbox{\hyperlink{struct_point_a8cc4b7ed7fc892ba38d23b98175e2ee6}{isKill}}\ ||\ o.\doxymbox{\hyperlink{struct_point_a8cc4b7ed7fc892ba38d23b98175e2ee6}{isKill}};}
+\DoxyCodeLine{00031\ \ \ \ \ \}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_point_ab83b325efe6622b25420f727080300ae}{operator<}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_point_a72d3cd01c5ee7145b98c5f898fe7f1e1}{Point}}\&\ o)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{struct_point_a38c212de9efe893cf7150125a5a27131}{line}}\ <\ o.\doxymbox{\hyperlink{struct_point_a38c212de9efe893cf7150125a5a27131}{line}};\ \}}
+\DoxyCodeLine{00035\ \};}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//DAPROJECT2\_POINT\_H}}
+
+\end{DoxyCode}

@@ -1,0 +1,64 @@
+\doxysection{Point Struct Reference}
+\hypertarget{struct_point}{}\label{struct_point}\index{Point@{Point}}
+
+
+Represents a single program point (line number) within a live range.  
+
+
+
+
+{\ttfamily \+\#include $<$Point.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{struct_point_a72d3cd01c5ee7145b98c5f898fe7f1e1}\label{struct_point_a72d3cd01c5ee7145b98c5f898fe7f1e1} 
+{\bfseries Point} (int l, bool d, bool k)
+\begin{DoxyCompactList}\small\item\em Constructs a \doxylink{struct_point}{Point}. @complexity O(1). \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{struct_point_a6178985f9eabd11a7b209e4994047207}{absorb}} (const \doxymbox{\hyperlink{struct_point}{Point}} \&o)
+\begin{DoxyCompactList}\small\item\em Merges flags from another point at the same line number. \end{DoxyCompactList}\item 
+\Hypertarget{struct_point_ab83b325efe6622b25420f727080300ae}\label{struct_point_ab83b325efe6622b25420f727080300ae} 
+bool {\bfseries operator$<$} (const \doxymbox{\hyperlink{struct_point}{Point}} \&o) const
+\begin{DoxyCompactList}\small\item\em Compares by line number. @complexity O(1). \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{struct_point_a38c212de9efe893cf7150125a5a27131}\label{struct_point_a38c212de9efe893cf7150125a5a27131} 
+int {\bfseries line}
+\begin{DoxyCompactList}\small\item\em Program line number. \end{DoxyCompactList}\item 
+\Hypertarget{struct_point_a546f07caac0c95094f741946a5157472}\label{struct_point_a546f07caac0c95094f741946a5157472} 
+bool {\bfseries is\+Def}
+\begin{DoxyCompactList}\small\item\em True if the variable is defined at this point. \end{DoxyCompactList}\item 
+\Hypertarget{struct_point_a8cc4b7ed7fc892ba38d23b98175e2ee6}\label{struct_point_a8cc4b7ed7fc892ba38d23b98175e2ee6} 
+bool {\bfseries is\+Kill}
+\begin{DoxyCompactList}\small\item\em True if this is the last use of the variable\textquotesingle{}s value. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Represents a single program point (line number) within a live range. 
+
+A point may be a definition (is\+Def), a last-\/use/\+kill (is\+Kill), or a plain intermediate live point. A point can simultaneously be a def and a kill (e.\+g. i = i + 1). 
+
+\label{doc-func-members}
+\Hypertarget{struct_point_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{struct_point_a6178985f9eabd11a7b209e4994047207}\index{Point@{Point}!absorb@{absorb}}
+\index{absorb@{absorb}!Point@{Point}}
+\doxysubsubsection{\texorpdfstring{absorb()}{absorb()}}
+{\footnotesize\ttfamily \label{struct_point_a6178985f9eabd11a7b209e4994047207} 
+void Point::\+absorb (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_point}{Point}} \&}]{o}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Merges flags from another point at the same line number. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em o} & \doxylink{struct_point}{Point} to absorb (must share the same line). @complexity O(1) \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+Point.\+h\end{DoxyCompactItemize}

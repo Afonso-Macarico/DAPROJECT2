@@ -1,0 +1,57 @@
+\doxysection{Graph\texorpdfstring{$<$}{<} T \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{class_graph}{}\label{class_graph}\index{Graph$<$ T $>$@{Graph$<$ T $>$}}
+
+
+Directed graph with adjacency-\/list representation.  
+
+
+
+
+{\ttfamily \+\#include $<$Graph.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_graph_a8b7b7465fbfd562e2a469f90a437ab75}\label{class_graph_a8b7b7465fbfd562e2a469f90a437ab75} 
+\doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$ \texorpdfstring{$\ast$}{*} {\bfseries find\+Vertex} (const T \&in) const
+\begin{DoxyCompactList}\small\item\em Finds and returns the vertex with info == in, or NULL. @complexity O(\+V). \end{DoxyCompactList}\item 
+\Hypertarget{class_graph_a0853eac15cdf0f06d63f4b8a7820ec71}\label{class_graph_a0853eac15cdf0f06d63f4b8a7820ec71} 
+int {\bfseries get\+Num\+Vertex} () const
+\item 
+\Hypertarget{class_graph_a00be284ea2be3b3d0f0d2e493b70245b}\label{class_graph_a00be284ea2be3b3d0f0d2e493b70245b} 
+bool {\bfseries add\+Vertex} (const T \&in)
+\begin{DoxyCompactList}\small\item\em Adds a vertex; returns false if it already exists. @complexity O(\+V). \end{DoxyCompactList}\item 
+\Hypertarget{class_graph_af9c903104ad69a7782979fa9caedf163}\label{class_graph_af9c903104ad69a7782979fa9caedf163} 
+bool {\bfseries remove\+Vertex} (const T \&in)
+\begin{DoxyCompactList}\small\item\em Removes a vertex and all its incident edges. @complexity O(V+E). \end{DoxyCompactList}\item 
+\Hypertarget{class_graph_ac61af3aafe6277215f5a3b3cc7d58ce2}\label{class_graph_ac61af3aafe6277215f5a3b3cc7d58ce2} 
+bool {\bfseries add\+Edge} (const T \&sourc, const T \&dest, double w)
+\begin{DoxyCompactList}\small\item\em Adds a directed edge sourc→dest with weight w. @complexity O(\+V). \end{DoxyCompactList}\item 
+\Hypertarget{class_graph_a1106092a37366486cf55576f9ec01692}\label{class_graph_a1106092a37366486cf55576f9ec01692} 
+bool {\bfseries remove\+Edge} (const T \&sourc, const T \&dest)
+\begin{DoxyCompactList}\small\item\em Removes the edge sourc→dest; returns false if not found. @complexity O(V+E). \end{DoxyCompactList}\item 
+\Hypertarget{class_graph_a923b43995f81ad9319bbc81a1e433e64}\label{class_graph_a923b43995f81ad9319bbc81a1e433e64} 
+vector$<$ \doxymbox{\hyperlink{class_vertex}{Vertex}}$<$ T $>$ \texorpdfstring{$\ast$}{*} $>$ {\bfseries get\+Vertex\+Set} () const
+\item 
+\Hypertarget{class_graph_a911798b1a89f8c4ae90ba3eee849cff8}\label{class_graph_a911798b1a89f8c4ae90ba3eee849cff8} 
+vector$<$ T $>$ {\bfseries dfs} () const
+\item 
+\Hypertarget{class_graph_a510522c8221b321a82e687fe2f2cb484}\label{class_graph_a510522c8221b321a82e687fe2f2cb484} 
+vector$<$ T $>$ {\bfseries dfs} (const T \&source) const
+\item 
+\Hypertarget{class_graph_aa47a4130165550e208e7a063fce6983a}\label{class_graph_aa47a4130165550e208e7a063fce6983a} 
+vector$<$ T $>$ {\bfseries bfs} (const T \&source) const
+\item 
+\Hypertarget{class_graph_a4eca9d8e63b518989c767655b9b4691f}\label{class_graph_a4eca9d8e63b518989c767655b9b4691f} 
+void {\bfseries emit\+DOTFile} (string gname)
+\begin{DoxyCompactList}\small\item\em Writes the graph to a Graphviz .gv file. @complexity O(V+E). \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$class T$>$\newline
+class Graph$<$ T $>$}
+Directed graph with adjacency-\/list representation. 
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_graph_8h}{Graph.\+h}}\end{DoxyCompactItemize}

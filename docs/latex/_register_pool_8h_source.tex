@@ -1,0 +1,28 @@
+\doxysection{Register\+Pool.\+h}
+\hypertarget{_register_pool_8h_source}{}\label{_register_pool_8h_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ DAPROJECT2\_REGISTERPOOL\_H}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ DAPROJECT2\_REGISTERPOOL\_H}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_register_pool_a5caa2920a3b3cb65f0022631d8750d4c}{RegisterPool}}\ \{}
+\DoxyCodeLine{00013\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{int}\ K;\ }
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00018\ \ \ \ \ \doxymbox{\hyperlink{class_register_pool_a5caa2920a3b3cb65f0022631d8750d4c}{RegisterPool}}()\ :\ K(0)\ \{\}}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00021\ \ \ \ \ \doxymbox{\hyperlink{class_register_pool_ad52c89b6839b55942d855c0ac71f1362}{RegisterPool}}(\textcolor{keywordtype}{int}\ k)\ :\ K(k)\ \{\}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_register_pool_a677fafc1323ca65258cb2817884c9ce1}{getK}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ K;\ \}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00030\ \ \ \ \ std::string\ \doxymbox{\hyperlink{class_register_pool_ab0121e6aae5428295ca3d8652a630978}{getRegisterName}}(\textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id})\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keywordtype}{id}\ ==\ -\/1)\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}SPILL"{}};}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}R"{}}\ +\ std::to\_string(\textcolor{keywordtype}{id});}
+\DoxyCodeLine{00033\ \ \ \ \ \}}
+\DoxyCodeLine{00034\ \};}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//DAPROJECT2\_REGISTERPOOL\_H}}
+
+\end{DoxyCode}

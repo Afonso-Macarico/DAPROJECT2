@@ -1,0 +1,29 @@
+\doxysection{main.\+cpp File Reference}
+\hypertarget{main_8cpp}{}\label{main_8cpp}\index{main.cpp@{main.cpp}}
+
+
+Entry point for the Compiler Register Allocator tool.  
+
+
+{\ttfamily \+\#include $<$iostream$>$}\newline
+{\ttfamily \+\#include $<$string$>$}\newline
+{\ttfamily \+\#include $<$vector$>$}\newline
+{\ttfamily \+\#include "{}Parser.\+h"{}}\newline
+{\ttfamily \+\#include "{}menu.\+h"{}}\newline
+{\ttfamily \+\#include "{}Convert.\+h"{}}\newline
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{main_8cpp_a0ddf1224851353fc92bfbff6f499fa97}\label{main_8cpp_a0ddf1224851353fc92bfbff6f499fa97} 
+int {\bfseries main} (int argc, char \texorpdfstring{$\ast$}{*}argv\+[$\,$]\+)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Entry point for the Compiler Register Allocator tool. 
+
+Supports two modes:\+
+\begin{DoxyItemize}
+\item Batch mode:\+ ./\+my\+Prog -\/b ranges.\+txt registers.\+txt allocation.\+txt
+\item Interactive mode:\+ ./\+my\+Prog (launches the menu) 
+\end{DoxyItemize}

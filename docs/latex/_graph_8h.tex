@@ -1,0 +1,30 @@
+\doxysection{Graph.\+h File Reference}
+\hypertarget{_graph_8h}{}\label{_graph_8h}\index{Graph.h@{Graph.h}}
+
+
+Generic directed graph using adjacency lists.  
+
+
+{\ttfamily \+\#include $<$cstddef$>$}\newline
+{\ttfamily \+\#include $<$vector$>$}\newline
+{\ttfamily \+\#include $<$queue$>$}\newline
+{\ttfamily \+\#include $<$fstream$>$}\newline
+{\ttfamily \+\#include $<$iostream$>$}\newline
+{\ttfamily \+\#include $<$limits$>$}\newline
+{\ttfamily \+\#include $<$algorithm$>$}\newline
+{\ttfamily \+\#include "{}Mutable\+Priority\+Queue.\+h"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \doxymbox{\hyperlink{class_vertex}{Vertex$<$ T $>$}}
+\begin{DoxyCompactList}\small\item\em A graph vertex storing info of type T and a list of outgoing edges. \end{DoxyCompactList}\item 
+class \doxymbox{\hyperlink{class_edge}{Edge$<$ T $>$}}
+\begin{DoxyCompactList}\small\item\em A directed weighted edge between two vertices. \end{DoxyCompactList}\item 
+class \doxymbox{\hyperlink{class_graph}{Graph$<$ T $>$}}
+\begin{DoxyCompactList}\small\item\em Directed graph with adjacency-\/list representation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Generic directed graph using adjacency lists. 
+
+Provides \doxylink{class_vertex}{Vertex}, \doxylink{class_edge}{Edge} and \doxylink{class_graph}{Graph} template classes used throughout the project as the primary representation of the interference graph. 
