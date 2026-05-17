@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <climits>
+#include <cmath>
 
 Graph<int> Convert::BuildGraph(const Data& data) {
     Graph<int> g;
@@ -118,22 +119,24 @@ void Convert::allocate(Data& data) {
         if (web.reg == -1)
             web.overflow = true;
     }
-
 }
 
 // ── tryColor ──────────────────────────────────────────────────────────────
 // Runs the greedy coloring phase only (no spilling decisions).
 // Returns true if ALL non-overflow webs got a colour, false otherwise.
-// Assumes active/overflow flags and reset of reg are already set by caller.
 bool Convert::tryColor(Data& data) {
     const int K = data.pool.getK();
     std::stack<int> S;
     int activeCount = 0;
-    for (const auto& w : data.webs)
+
+    // Clear old state tracking and safely isolate register fields from previous failed passes
+    for (auto& w : data.webs) {
+        w.reg = -1;
+        w.active = !w.overflow;
         if (w.active) activeCount++;
+    }
 
     // Phase 1: simplification — only push, never spill internally
-    // If we get stuck it means the caller needs to spill more webs
     while (activeCount > 0) {
         bool pushed = false;
         for (auto& web : data.webs) {
@@ -179,9 +182,6 @@ bool Convert::tryColor(Data& data) {
 }
 
 // ── allocateSpilling ──────────────────────────────────────────────────────
-// Algorithm: spilling, K
-// Tries basic coloring first. If it fails, pre-spills up to K webs
-// (highest degree first) one at a time until coloring succeeds.
 void Convert::allocateSpilling(Data& data) {
     const int maxSpills = data.algorithmPar;
     const int K = data.pool.getK();
@@ -205,25 +205,27 @@ void Convert::allocateSpilling(Data& data) {
 
         if (spillBudget == maxSpills) break;
 
-        // tryColor left active flags in an inconsistent intermediate state.
-        // Reset them before computing degrees so the degree calculation is correct.
+        // Reset active flags explicitly before recalculating accurate neighbor degrees
         for (auto& w : data.webs)
             w.active = !w.overflow;
 
         // pick the highest-degree active web to spill next
-        // rationale: removing the most-connected node frees the most edges
-        int spillIdx = -1;
-        int maxDeg   = -1;
+        // tiebreak: prefer the web with the most points (largest live range)
+        int spillIdx  = -1;
+        int maxDeg    = -1;
+        int maxPoints = -1;
         for (int i = 0; i < (int)data.webs.size(); i++) {
             if (data.webs[i].overflow) continue; // already spilled
             int deg = Degree(data.webs[i], data.webs);
-            if (deg > maxDeg) { maxDeg = deg; spillIdx = i; }
+            int pts = (int)data.webs[i].allPoints.size();
+            if (deg > maxDeg || (deg == maxDeg && pts > maxPoints)) {
+                maxDeg = deg; maxPoints = pts; spillIdx = i;
+            }
         }
         if (spillIdx == -1) break;
         data.webs[spillIdx].overflow = true;
     }
 
-    // if we get here, even maxSpills wasn't enough
     std::cerr << "Warning: spilling up to " << maxSpills
               << " web(s) was not enough to allocate with K=" << K
               << ". All webs spilled to memory." << std::endl;
@@ -233,36 +235,29 @@ void Convert::allocateSpilling(Data& data) {
         w.active = false;
     }
 }
+
 // ── splitWeb ──────────────────────────────────────────────────────────────
-// Splits the web at splitIdx into two derived webs.
-// Finds the best split point: the gap between two consecutive points where
-// the fewest neighbors are alive on both sides.
-// The split point is included in BOTH halves: w1 ends with isKill=true there,
-// w2 starts with isDef=true there (models a store then a reload).
 static void splitWeb(Data& data, int splitIdx, int& nextId) {
-    // copy the web before erasing — erase invalidates the reference
     Web w = data.webs[splitIdx];
     auto& pts = w.allPoints;
 
     if ((int)pts.size() < 2) return;
 
-    // find best split point: gap between pts[i] and pts[i+1] where the
-    // fewest neighbors are alive on both sides of the cut
-    int bestSplit = (int)pts.size() / 2;
+    int bestSplit = 0;
     int minCross  = INT_MAX;
 
+    // Evaluate gaps between index i and i+1
     for (int i = 0; i < (int)pts.size() - 1; i++) {
         int lineLeft  = pts[i].line;
         int lineRight = pts[i + 1].line;
         int cross = 0;
+
         for (const auto& other : data.webs) {
             if (other.id == w.id) continue;
             bool aliveLeft  = false;
             bool aliveRight = false;
             for (const auto& p : other.allPoints) {
-                // alive on left: has a point at or before lineLeft that is not a pure kill
                 if (p.line <= lineLeft  && !(p.isKill && !p.isDef)) aliveLeft  = true;
-                // alive on right: has a point at or after lineRight that is not a pure def
                 if (p.line >= lineRight && !(p.isDef  && !p.isKill)) aliveRight = true;
             }
             if (aliveLeft && aliveRight) cross++;
@@ -273,44 +268,38 @@ static void splitWeb(Data& data, int splitIdx, int& nextId) {
         }
     }
 
-    // build w1: pts[0..bestSplit], mark last point as kill
+    // build w1: points from index 0 up to bestSplit
     Web w1(nextId++, w.Name + "_sp1");
     for (int i = 0; i <= bestSplit; i++) {
         Point p = pts[i];
-        if (i == bestSplit) p.isKill = true;
+        if (i == bestSplit) p.isKill = true; // Ends strictly here
         w1.allPoints.push_back(p);
     }
 
-    // build w2: pts[bestSplit..end], mark first point as def
+    // build w2: points starting strictly from bestSplit + 1 to the end
     Web w2(nextId++, w.Name + "_sp2");
-    for (int i = bestSplit; i < (int)pts.size(); i++) {
+    for (int i = bestSplit + 1; i < (int)pts.size(); i++) {
         Point p = pts[i];
-        if (i == bestSplit) p.isDef = true;
+        if (i == bestSplit + 1) p.isDef = true; // Starts strictly here
         w2.allPoints.push_back(p);
     }
 
-    // remove original web first, then add the two derived ones
-    data.webs.erase(data.webs.begin() + splitIdx);
-    data.webs.push_back(w1);
+    // Modify array structure directly via assignment to ensure vector layout/sequence order metrics don't scramble
+    data.webs[splitIdx] = w1;
     data.webs.push_back(w2);
 }
 
 // ── allocateSplitting ─────────────────────────────────────────────────────
-// Algorithm: splitting, K
-// Tries basic coloring first. If stuck, splits the highest-degree web at
-// the point that removes the most interference edges, then retries.
-// Repeats up to K times. If still infeasible, all webs go to memory.
 void Convert::allocateSplitting(Data& data) {
     const int maxSplits = data.algorithmPar;
     const int K = data.pool.getK();
 
-    // nextId must be beyond all existing web ids to avoid collisions
     int nextId = 0;
     for (const auto& w : data.webs)
         if (w.id >= nextId) nextId = w.id + 1;
 
     for (int splitBudget = 0; splitBudget <= maxSplits; splitBudget++) {
-        // reset flags
+        // Clear variables flags before trial color pass
         for (auto& w : data.webs) {
             w.reg = -1;
             w.overflow = false;
@@ -326,17 +315,22 @@ void Convert::allocateSplitting(Data& data) {
 
         if (splitBudget == maxSplits) break;
 
-        // tryColor left active flags inconsistent — reset before degree calc
+        // Reset tracking states globally before checking accurate degrees
         for (auto& w : data.webs)
             w.active = true;
 
         // pick highest-degree web to split (must have at least 2 points)
-        int splitIdx = -1;
-        int maxDeg   = -1;
+        // tiebreak: prefer the web with the most points (most splitting potential)
+        int splitIdx  = -1;
+        int maxDeg    = -1;
+        int maxPoints = -1;
         for (int i = 0; i < (int)data.webs.size(); i++) {
             if ((int)data.webs[i].allPoints.size() < 2) continue;
             int deg = Degree(data.webs[i], data.webs);
-            if (deg > maxDeg) { maxDeg = deg; splitIdx = i; }
+            int pts = (int)data.webs[i].allPoints.size();
+            if (deg > maxDeg || (deg == maxDeg && pts > maxPoints)) {
+                maxDeg = deg; maxPoints = pts; splitIdx = i;
+            }
         }
 
         if (splitIdx == -1) break;
@@ -350,7 +344,6 @@ void Convert::allocateSplitting(Data& data) {
         splitWeb(data, splitIdx, nextId);
     }
 
-    // failed even after maxSplits — all to memory
     std::cerr << "Warning: splitting up to " << maxSplits
               << " web(s) was not enough to allocate with K=" << K
               << ". All webs spilled to memory." << std::endl;
@@ -387,7 +380,6 @@ void Convert::writeOutput(const Data& data, const std::string& outputFile) {
         out = &file;
     }
 
-    // count registers actually used
     std::set<int> usedRegs;
     for (const auto& w : data.webs)
         if (!w.overflow && w.reg >= 0)
@@ -409,14 +401,12 @@ void Convert::writeOutput(const Data& data, const std::string& outputFile) {
         for (int i = 0; i < (int)data.webs.size(); i++)
             *out << "M: web" << i << "\n";
     } else {
-        // print register assignments (a register can map to multiple webs)
         for (int r : usedRegs) {
             for (int i = 0; i < (int)data.webs.size(); i++) {
                 if (!data.webs[i].overflow && data.webs[i].reg == r)
                     *out << "r" << r << ": web" << i << "\n";
             }
         }
-        // print spilled webs
         for (int i = 0; i < (int)data.webs.size(); i++) {
             if (data.webs[i].overflow)
                 *out << "M: web" << i << "\n";
@@ -425,6 +415,5 @@ void Convert::writeOutput(const Data& data, const std::string& outputFile) {
 }
 
 void Convert::printResults(const Data& data) {
-    // print to console in the same format
     writeOutput(data, "");
 }
