@@ -80,7 +80,7 @@ Data Parser::parse(const std::string& rangesFile, const std::string& regsFile, b
     if (!parseRegs(regsFile,data)) {
         regdone=false;
     };
-    if (parseRanges(rangesFile, data)) {
+    if (!parseRanges(rangesFile, data)) {
         rangesdone=false;
     };
         return data;
