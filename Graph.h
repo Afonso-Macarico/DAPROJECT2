@@ -1,3 +1,10 @@
+/**
+ * @file Graph.h
+ * @brief Generic directed graph using adjacency lists.
+ *
+ * Provides Vertex, Edge and Graph template classes used throughout the project
+ * as the primary representation of the interference graph.
+ */
 /*
  * Graph.h
  */
@@ -23,6 +30,7 @@ template <class T> class Vertex;
 
 /****************** Provided structures  ********************/
 
+/// @brief A graph vertex storing info of type T and a list of outgoing edges.
 template <class T>
 class Vertex {
 	T info;                // contents
@@ -59,6 +67,7 @@ public:
     //vector<Edge <T>> getIncoming() const;
 };
 
+/// @brief A directed weighted edge between two vertices.
 template <class T>
 class Edge {
 	Vertex<T> * dest;      // destination vertex
@@ -73,6 +82,7 @@ public:
 	friend class Vertex<T>;
 };
 
+/// @brief Directed graph with adjacency-list representation.
 template <class T>
 class Graph {
 	vector<Vertex<T> *> vertexSet;    // vertex set
@@ -174,6 +184,7 @@ void Edge<T>::setWeight(double weight) {
  * Auxiliary function to find a vertex with a given content.
  */
 template <class T>
+/// @brief Finds and returns the vertex with info == in, or NULL. @complexity O(V)
 Vertex<T> * Graph<T>::findVertex(const T &in) const {
 	for (auto v : vertexSet)
 		if (v->info == in)
@@ -223,6 +234,7 @@ void Vertex<T>::setAdj(const vector<Edge<T>> &adj) {
  *  Returns true if successful, and false if a vertex with that content already exists.
  */
 template <class T>
+/// @brief Adds a vertex; returns false if it already exists. @complexity O(V)
 bool Graph<T>::addVertex(const T &in) {
 	if ( findVertex(in) != NULL)
 		return false;
@@ -237,6 +249,7 @@ bool Graph<T>::addVertex(const T &in) {
  * Returns true if successful, and false if the source or destination vertex does not exist.
  */
 template <class T>
+/// @brief Adds a directed edge sourc→dest with weight w. @complexity O(V)
 bool Graph<T>::addEdge(const T &sourc, const T &dest, double w) {
 	auto v1 = findVertex(sourc);
 	auto v2 = findVertex(dest);
@@ -263,6 +276,7 @@ void Vertex<T>::addEdge(Vertex<T> *d, double w) {
  * Returns true if successful, and false if such edge does not exist.
  */
 template <class T>
+/// @brief Removes the edge sourc→dest; returns false if not found. @complexity O(V+E)
 bool Graph<T>::removeEdge(const T &sourc, const T &dest) {
 	auto v1 = findVertex(sourc);
 	auto v2 = findVertex(dest);
@@ -312,6 +326,7 @@ bool Vertex<T>::removeEdgeTo(Vertex<T> *d) {
  *  Returns true if successful, and false if such vertex does not exist.
  */
 template <class T>
+/// @brief Removes a vertex and all its incident edges. @complexity O(V+E)
 bool Graph<T>::removeVertex(const T &in) {
 	for (auto it = vertexSet.begin(); it != vertexSet.end(); it++)
 		if ((*it)->info  == in) {
@@ -326,6 +341,7 @@ bool Graph<T>::removeVertex(const T &in) {
 }
 
 template <class T>
+/// @brief Writes the graph to a Graphviz .gv file. @complexity O(V+E)
 inline void  Graph<T>::emitDOTFile(string gname) {
     ofstream g_dot_file;
 

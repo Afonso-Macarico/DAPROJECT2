@@ -1,3 +1,7 @@
+/**
+ * @file menu.cpp
+ * @brief Implementation of the interactive menu.
+ */
 #include "menu.h"
 #include "Convert.h"
 #include <filesystem>
@@ -5,7 +9,6 @@
 void runMenu(Parser parser) {
     int choice = -1;
     Data data;
-    std::string currentRangesName; // used to name the output file
 
     while (choice != 0) {
         std::cout << "\n==========================================" << std::endl;
@@ -57,11 +60,6 @@ void runMenu(Parser parser) {
                 temp.InterferenceGraph = Convert::BuildGraph(temp);
                 data = temp;
 
-                // derive output name from ranges filename (strip extension)
-                currentRangesName = rangesFile;
-                size_t dot = currentRangesName.rfind('.');
-                if (dot != std::string::npos) currentRangesName = currentRangesName.substr(0, dot);
-
                 std::cout << "\nLoaded successfully." << std::endl;
                 std::cout << "  Ranges:    " << Ranges    << std::endl;
                 std::cout << "  Registers: " << Registers << std::endl;
@@ -93,7 +91,6 @@ void runMenu(Parser parser) {
                     break;
                 }
                 std::filesystem::create_directories("../Output");
-                // find next available allocation number
                 int x = 1;
                 while (std::filesystem::exists("../Output/allocation_" + std::to_string(x) + ".txt"))
                     x++;

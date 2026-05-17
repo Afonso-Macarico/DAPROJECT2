@@ -1,3 +1,7 @@
+/**
+ * @file Convert.cpp
+ * @brief Implementation of graph construction and register allocation algorithms.
+ */
 #include "Convert.h"
 #include <stack>
 #include <set>
@@ -9,16 +13,14 @@
 Graph<int> Convert::BuildGraph(const Data& data) {
     Graph<int> g;
 
-    // Add one vertex per web
     for (const auto& web : data.webs)
         g.addVertex(web.id);
 
-    // Add an edge between any two webs that interfere
     for (int i = 0; i < (int)data.webs.size(); i++)
         for (int j = i + 1; j < (int)data.webs.size(); j++)
             if (data.webs[i].OverlapCheck(data.webs[j])) {
                 g.addEdge(data.webs[i].id, data.webs[j].id, 1);
-                g.addEdge(data.webs[j].id, data.webs[i].id, 1); // undirected
+                g.addEdge(data.webs[j].id, data.webs[i].id, 1);
             }
     return g;
 }
@@ -50,25 +52,21 @@ void Convert::allocate(Data& data) {
         allocateFree(data);
         return;
     }
-    // default: basic
     const int K = data.pool.getK();
 
-    // reset
     for (auto& w : data.webs) {
         w.reg = -1;
         w.overflow = false;
         w.active = true;
     }
 
-    std::stack<int> S; // stores web ids in simplification order
+    std::stack<int> S;
 
-    // ── Phase 1: Simplification ──
     int activeCount = (int)data.webs.size();
 
     while (activeCount > 0) {
         bool pushed = false;
 
-        // push all active nodes with degree < K
         for (auto& web : data.webs) {
             if (!web.active) continue;
             if (Degree(web, data.webs) < K) {
@@ -79,7 +77,6 @@ void Convert::allocate(Data& data) {
             }
         }
 
-        // if no node had degree < K, allocation is infeasible — basic does not spill
         if (!pushed) {
             std::cerr << "Warning: register allocation with K=" << K
                       << " is not possible." << std::endl;
@@ -92,16 +89,14 @@ void Convert::allocate(Data& data) {
         }
     }
 
-    // ── Phase 2: Colouring ──
     while (!S.empty()) {
         int id = S.top(); S.pop();
         int idx = findIdx(id, data.webs);
         if (idx == -1) continue;
 
         Web& web = data.webs[idx];
-        web.active = true; // restore to graph
+        web.active = true;
 
-        // collect colours already used by active (already coloured) neighbours
         std::set<int> usedColours;
         for (const auto& other : data.webs) {
             if (!other.active) continue;
@@ -111,7 +106,6 @@ void Convert::allocate(Data& data) {
             usedColours.insert(other.reg);
         }
 
-        // assign lowest available colour
         for (int c = 0; c < K; c++) {
             if (usedColours.find(c) == usedColours.end()) {
                 web.reg = c;
@@ -119,28 +113,22 @@ void Convert::allocate(Data& data) {
             }
         }
 
-        // if no colour found (shouldn't happen in basic, but guard anyway)
         if (web.reg == -1)
             web.overflow = true;
     }
 }
 
-// ── tryColor ──────────────────────────────────────────────────────────────
-// Runs the greedy coloring phase only (no spilling decisions).
-// Returns true if ALL non-overflow webs got a colour, false otherwise.
 bool Convert::tryColor(Data& data) {
     const int K = data.pool.getK();
     std::stack<int> S;
     int activeCount = 0;
 
-    // Clear old state tracking and safely isolate register fields from previous failed passes
     for (auto& w : data.webs) {
         w.reg = -1;
         w.active = !w.overflow;
         if (w.active) activeCount++;
     }
 
-    // Phase 1: simplification — only push, never spill internally
     while (activeCount > 0) {
         bool pushed = false;
         for (auto& web : data.webs) {
@@ -153,12 +141,10 @@ bool Convert::tryColor(Data& data) {
             }
         }
         if (!pushed) {
-            // stuck — can't simplify without spilling, signal failure
             return false;
         }
     }
 
-    // Phase 2: coloring
     while (!S.empty()) {
         int id = S.top(); S.pop();
         int idx = findIdx(id, data.webs);
@@ -185,41 +171,34 @@ bool Convert::tryColor(Data& data) {
     return true;
 }
 
-// ── allocateSpilling ──────────────────────────────────────────────────────
 void Convert::allocateSpilling(Data& data) {
     const int maxSpills = data.algorithmPar;
     const int K = data.pool.getK();
 
     for (int spillBudget = 0; spillBudget <= maxSpills; spillBudget++) {
-        // reset everything
         for (auto& w : data.webs) {
             w.reg = -1;
-            w.active = !w.overflow; // overflow=pre-spilled, stays out
+            w.active = !w.overflow;
         }
 
         if (tryColor(data)) {
-            // success
             int spillCount = 0;
             for (const auto& w : data.webs) if (w.overflow) spillCount++;
             if (spillCount > 0)
-                std::cerr << "Spilling: allocation succeeded after spilling "
-                          << spillCount << " web(s)." << std::endl;
+                std::cerr << "Allocation succeeded after spilling " << spillCount << " web(s)." << std::endl;
             return;
         }
 
         if (spillBudget == maxSpills) break;
 
-        // Reset active flags explicitly before recalculating accurate neighbor degrees
         for (auto& w : data.webs)
             w.active = !w.overflow;
 
-        // pick the highest-degree active web to spill next
-        // tiebreak: prefer the web with the most points (largest live range)
-        int spillIdx  = -1;
-        int maxDeg    = -1;
+        int spillIdx = -1;
+        int maxDeg = -1;
         int maxPoints = -1;
         for (int i = 0; i < (int)data.webs.size(); i++) {
-            if (data.webs[i].overflow) continue; // already spilled
+            if (data.webs[i].overflow) continue;
             int deg = Degree(data.webs[i], data.webs);
             int pts = (int)data.webs[i].allPoints.size();
             if (deg > maxDeg || (deg == maxDeg && pts > maxPoints)) {
@@ -240,7 +219,6 @@ void Convert::allocateSpilling(Data& data) {
     }
 }
 
-// ── splitWeb ──────────────────────────────────────────────────────────────
 static void splitWeb(Data& data, int splitIdx, int& nextId) {
     Web w = data.webs[splitIdx];
     auto& pts = w.allPoints;
@@ -248,17 +226,16 @@ static void splitWeb(Data& data, int splitIdx, int& nextId) {
     if ((int)pts.size() < 2) return;
 
     int bestSplit = 0;
-    int minCross  = INT_MAX;
+    int minCross = INT_MAX;
 
-    // Evaluate gaps between index i and i+1
     for (int i = 0; i < (int)pts.size() - 1; i++) {
-        int lineLeft  = pts[i].line;
+        int lineLeft = pts[i].line;
         int lineRight = pts[i + 1].line;
         int cross = 0;
 
         for (const auto& other : data.webs) {
             if (other.id == w.id) continue;
-            bool aliveLeft  = false;
+            bool aliveLeft = false;
             bool aliveRight = false;
             for (const auto& p : other.allPoints) {
                 if (p.line <= lineLeft  && !(p.isKill && !p.isDef)) aliveLeft  = true;
@@ -267,33 +244,29 @@ static void splitWeb(Data& data, int splitIdx, int& nextId) {
             if (aliveLeft && aliveRight) cross++;
         }
         if (cross < minCross) {
-            minCross  = cross;
+            minCross = cross;
             bestSplit = i;
         }
     }
 
-    // build w1: points from index 0 up to bestSplit
     Web w1(nextId++, w.Name + "_sp1");
     for (int i = 0; i <= bestSplit; i++) {
         Point p = pts[i];
-        if (i == bestSplit) p.isKill = true; // Ends strictly here
+        if (i == bestSplit) p.isKill = true;
         w1.allPoints.push_back(p);
     }
 
-    // build w2: points starting strictly from bestSplit + 1 to the end
     Web w2(nextId++, w.Name + "_sp2");
     for (int i = bestSplit + 1; i < (int)pts.size(); i++) {
         Point p = pts[i];
-        if (i == bestSplit + 1) p.isDef = true; // Starts strictly here
+        if (i == bestSplit + 1) p.isDef = true;
         w2.allPoints.push_back(p);
     }
 
-    // Modify array structure directly via assignment to ensure vector layout/sequence order metrics don't scramble
     data.webs[splitIdx] = w1;
     data.webs.push_back(w2);
 }
 
-// ── allocateSplitting ─────────────────────────────────────────────────────
 void Convert::allocateSplitting(Data& data) {
     const int maxSplits = data.algorithmPar;
     const int K = data.pool.getK();
@@ -303,7 +276,6 @@ void Convert::allocateSplitting(Data& data) {
         if (w.id >= nextId) nextId = w.id + 1;
 
     for (int splitBudget = 0; splitBudget <= maxSplits; splitBudget++) {
-        // Clear variables flags before trial color pass
         for (auto& w : data.webs) {
             w.reg = -1;
             w.overflow = false;
@@ -319,14 +291,11 @@ void Convert::allocateSplitting(Data& data) {
 
         if (splitBudget == maxSplits) break;
 
-        // Reset tracking states globally before checking accurate degrees
         for (auto& w : data.webs)
             w.active = true;
 
-        // pick highest-degree web to split (must have at least 2 points)
-        // tiebreak: prefer the web with the most points (most splitting potential)
-        int splitIdx  = -1;
-        int maxDeg    = -1;
+        int splitIdx = -1;
+        int maxDeg = -1;
         int maxPoints = -1;
         for (int i = 0; i < (int)data.webs.size(); i++) {
             if ((int)data.webs[i].allPoints.size() < 2) continue;
@@ -338,12 +307,6 @@ void Convert::allocateSplitting(Data& data) {
         }
 
         if (splitIdx == -1) break;
-
-        std::cerr << "Splitting web " << data.webs[splitIdx].Name
-                  << " (id=" << data.webs[splitIdx].id
-                  << ", deg=" << maxDeg
-                  << ", points=" << data.webs[splitIdx].allPoints.size()
-                  << ")" << std::endl;
 
         splitWeb(data, splitIdx, nextId);
     }
@@ -359,19 +322,25 @@ void Convert::allocateSplitting(Data& data) {
 }
 
 void Convert::allocateFree(Data& data) {
+    struct RangeEntry {
+        LiveRange* lr;
+        Web* web;
+    };
+    struct ActiveEntry {
+        LiveRange* lr;
+        Web* web;
+        int reg;
+    };
+
+
     const int K = data.pool.getK();
 
     for (auto& w : data.webs) {
-        w.reg      = -1;
+        w.reg = -1;
         w.overflow = false;
-        w.active   = true;
+        w.active = true;
     }
 
-    // flat list pairing each LiveRange with its parent Web
-    struct RangeEntry {
-        LiveRange* lr;
-        Web*       web;
-    };
 
     std::vector<RangeEntry> sorted;
     for (auto& w : data.webs)
@@ -382,20 +351,14 @@ void Convert::allocateFree(Data& data) {
         return a.lr->start < b.lr->start;
     });
 
-    struct ActiveEntry {
-        LiveRange* lr;
-        Web*       web;
-        int        reg;
-    };
-
+    
     std::vector<ActiveEntry> active;
     std::vector<bool> freeRegs(K, true);
 
     for (auto& entry : sorted) {
-        LiveRange* lr  = entry.lr;
-        Web*       web = entry.web;
+        LiveRange* lr = entry.lr;
+        Web* web = entry.web;
 
-        // expire ranges that ended before this one starts — gaps are genuinely free
         std::vector<ActiveEntry> stillActive;
         for (auto& a : active) {
             if (a.lr->end < lr->start) {
@@ -406,7 +369,6 @@ void Convert::allocateFree(Data& data) {
         }
         active = stillActive;
 
-        // find a free register
         int chosen = -1;
         for (int r = 0; r < K; r++) {
             if (freeRegs[r]) { chosen = r; break; }
@@ -419,21 +381,18 @@ void Convert::allocateFree(Data& data) {
             if (web->reg == -1) {
                 web->reg = chosen;
             } else if (web->reg != chosen) {
-                // two ranges of same web got different registers — spill the web
                 web->overflow = true;
             }
 
         } else {
-            // no free register — find active range with furthest end point
             ActiveEntry* victim = nullptr;
             for (auto& a : active)
                 if (!victim || a.lr->end > victim->lr->end)
                     victim = &a;
 
             if (victim && lr->end < victim->lr->end) {
-                // spill the victim, give its register to current range
-                int freed        = victim->reg;
-                victim->web->reg      = -1;
+                int freed = victim->reg;
+                victim->web->reg = -1;
                 victim->web->overflow = true;
                 active.erase(std::remove_if(active.begin(), active.end(),
                     [&](const ActiveEntry& a) { return a.lr == victim->lr; }),
@@ -448,7 +407,6 @@ void Convert::allocateFree(Data& data) {
                     web->overflow = true;
                 }
             } else {
-                // current range ends latest — spill its web directly
                 web->overflow = true;
             }
         }
@@ -457,10 +415,8 @@ void Convert::allocateFree(Data& data) {
     int spillCount = 0;
     for (const auto& w : data.webs) if (w.overflow) spillCount++;
     if (spillCount > 0)
-        std::cerr << "Free (Linear Scan): allocation completed with "
-                  << spillCount << " web(s) spilled to memory." << std::endl;
+        std::cerr << "Linear scan: " << spillCount << " web(s) spilled to memory." << std::endl;
 }
-// helper: format a single web's ranges as "1+,2,3,4,5,6-" sorted ascending
 static std::string formatWeb(const Web& w) {
     std::string out;
     bool first = true;

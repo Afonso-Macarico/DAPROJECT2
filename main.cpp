@@ -1,3 +1,11 @@
+/**
+ * @file main.cpp
+ * @brief Entry point for the Compiler Register Allocator tool.
+ *
+ * Supports two modes:
+ *  - Batch mode:       ./myProg -b ranges.txt registers.txt allocation.txt
+ *  - Interactive mode: ./myProg  (launches the menu)
+ */
 #include <iostream>
 #include <string>
 #include <vector>
@@ -8,7 +16,6 @@
 int main(int argc, char* argv[]) {
     Parser parser;
 
-    // batch mode
     if (argc > 1 && std::string(argv[1]) == "-b") {
         if (argc < 5) {
             std::cerr << "Error: Missing arguments for batch mode." << std::endl;
@@ -30,7 +37,6 @@ int main(int argc, char* argv[]) {
         Convert::writeOutput(data, outputFile);
         return 0;
     }
-    //menu mode
     runMenu(parser);
     return 0;
 }
