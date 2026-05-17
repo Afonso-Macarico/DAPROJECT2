@@ -26,8 +26,8 @@ int main(int argc, char* argv[]) {
             return 1;
         }
         data.InterferenceGraph = Convert::BuildGraph(data);
-
-        std::cout << "Running in batch mode with " << Ranges << "and" << Registers << "..." << std::endl;
+        Convert::allocate(data);
+        Convert::writeOutput(data, outputFile);
         return 0;
     }
     //menu mode

@@ -1,9 +1,12 @@
-#include "Menu.h"
+#include "menu.h"
 #include "Convert.h"
+#include <filesystem>
 
 void runMenu(Parser parser) {
     int choice = -1;
     Data data;
+    std::string currentRangesName; // used to name the output file
+
     while (choice != 0) {
         std::cout << "\n==========================================" << std::endl;
         std::cout << "   Compiler Register Allocator   " << std::endl;
@@ -27,63 +30,76 @@ void runMenu(Parser parser) {
 
         switch (choice) {
             case 1: {
-                std::string Ranges;
-                std::cout << "Enter the Ranges file path: ";
-                std::getline(std::cin >> std::ws, Ranges);
+                std::string rangesFile;
+                std::cout << "Enter ranges filename (in Data/): ";
+                std::cin >> rangesFile;
+                if (rangesFile.size() < 4 || rangesFile.substr(rangesFile.size() - 4) != ".txt")
+                    rangesFile += ".txt";
 
-                if (!Ranges.empty() && Ranges.front() == '"' && Ranges.back() == '"') {
-                    Ranges = Ranges.substr(1, Ranges.size() - 2);
-                }
+                std::string registersFile;
+                std::cout << "Enter registers filename (in Data/): ";
+                std::cin >> registersFile;
+                if (registersFile.size() < 4 || registersFile.substr(registersFile.size() - 4) != ".txt")
+                    registersFile += ".txt";
 
-                std::string Registers;
-                std::cout << "Enter the Registers file path: ";
-                std::getline(std::cin >> std::ws, Registers);
+                std::string Ranges    = "../Data/" + rangesFile;
+                std::string Registers = "../Data/" + registersFile;
 
-                if (!Registers.empty() && Registers.front() == '"' && Registers.back() == '"') {
-                    Registers = Registers.substr(1, Registers.size() - 2);
-                }
-                bool regdone=true;
-                bool rangedone=true;
-                Data temp = parser.parse(Ranges, Registers,regdone ,rangedone);
-                if (!regdone or !rangedone) {
-                    std::cerr << "Press Enter to continue"<<std::endl;
+                bool regdone   = true;
+                bool rangedone = true;
+                Data temp = parser.parse(Ranges, Registers, regdone, rangedone);
+                if (!regdone || !rangedone) {
+                    std::cerr << "Failed to load files. Check they exist in Data/." << std::endl;
+                    std::cin.ignore(1000, '\n');
                     std::cin.get();
                     break;
                 }
-                temp.InterferenceGraph = Convert::BuildGraph(data);
+                temp.InterferenceGraph = Convert::BuildGraph(temp);
                 data = temp;
-                //Checking if the Graph built
 
-                std::cout << "\nDataset loaded successfully."<< std::endl<< "Press Enter to continue...";
+                // derive output name from ranges filename (strip extension)
+                currentRangesName = rangesFile;
+                size_t dot = currentRangesName.rfind('.');
+                if (dot != std::string::npos) currentRangesName = currentRangesName.substr(0, dot);
+
+                std::cout << "\nLoaded successfully." << std::endl;
+                std::cout << "  Ranges:    " << Ranges    << std::endl;
+                std::cout << "  Registers: " << Registers << std::endl;
+                std::cout << "Press Enter to continue...";
+                std::cin.ignore(1000, '\n');
                 std::cin.get();
                 break;
             }
             case 2: {
-                /**if (data.submissions.empty()) {
-                    std::cerr << "Error: No data in memory. Please load a file first (Option 1)." << std::endl<< "Press Enter to continue...";
+                if (data.webs.empty()) {
+                    std::cerr << "Error: No data loaded. Please load files first (Option 1)." << std::endl;
                     std::cin.ignore(1000, '\n');
                     std::cin.get();
-                } else {
-                    std::cout << "TODO..." << std::endl;
-                    std::cin.ignore(1000, '\n');
-                    std::cout << "\nSuccessfully. Press Enter to continue...";
-                    std::cin.get();
-                }**/
+                    break;
+                }
+                Convert::allocate(data);
+                std::cout << "\nAllocation complete. Results:\n\n";
+                Convert::printResults(data);
+                std::cout << "\nPress Enter to continue...";
+                std::cin.ignore(1000, '\n');
+                std::cin.get();
                 break;
             }
-            case 3:
-                /**if (data.submissions.empty()) {
-                    std::cerr << "Error: No data in memory. Please load a file first (Option 1)." << std::endl<< "Press Enter to continue...";
+            case 3: {
+                if (data.webs.empty()) {
+                    std::cerr << "Error: No data loaded. Please load files first (Option 1)." << std::endl;
                     std::cin.ignore(1000, '\n');
                     std::cin.get();
+                    break;
                 }
-                else {
-                    std::cout << "TODO....." << std::endl;
-                    std::cin.ignore(1000, '\n');
-                    std::cout << "\nSuccessfully. Press Enter to continue...";
-                    std::cin.get();
-                }**/
+                std::filesystem::create_directories("../Output");
+                std::string outPath = "../Output/allocation_" + currentRangesName + ".txt";
+                Convert::writeOutput(data, outPath);
+                std::cout << "Results written to " << outPath << "\nPress Enter to continue...";
+                std::cin.ignore(1000, '\n');
+                std::cin.get();
                 break;
+            }
             case 0:
                 std::cout << "Exiting program. Goodbye!" << std::endl;
                 break;

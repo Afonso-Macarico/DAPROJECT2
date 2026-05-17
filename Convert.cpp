@@ -1,6 +1,8 @@
 #include "Convert.h"
 #include <stack>
 #include <set>
+#include <fstream>
+#include <iostream>
 
 Graph<int> Convert::BuildGraph(const Data& data) {
     Graph<int> g;
@@ -124,4 +126,75 @@ void Convert::allocate(Data& data) {
         std::cerr << "Warning: register allocation infeasible with K=" << K
                   << ". " << spillCount << " web(s) spilled to memory." << std::endl;
     }
+}
+// helper: format a single web's ranges as "1+,2,3,4,5,6-" sorted ascending
+static std::string formatWeb(const Web& w) {
+    // collect all points across all ranges
+    std::vector<std::pair<int,char>> pts; // (line, marker)
+    for (const auto& r : w.ranges) {
+        pts.push_back({r.start, '+'});
+        pts.push_back({r.end,   '-'});
+    }
+    std::sort(pts.begin(), pts.end());
+    std::string out;
+    for (int i = 0; i < (int)pts.size(); i++) {
+        if (i > 0) out += ',';
+        out += std::to_string(pts[i].first);
+        if (pts[i].second != '\0') out += pts[i].second;
+    }
+    return out;
+}
+
+void Convert::writeOutput(const Data& data, const std::string& outputFile) {
+    std::ostream* out = &std::cout;
+    std::ofstream file;
+    if (!outputFile.empty()) {
+        file.open(outputFile);
+        if (!file.is_open()) {
+            std::cerr << "Error: Cannot open output file: " << outputFile << std::endl;
+            return;
+        }
+        out = &file;
+    }
+
+    // count registers actually used
+    std::set<int> usedRegs;
+    for (const auto& w : data.webs)
+        if (!w.overflow && w.reg >= 0)
+            usedRegs.insert(w.reg);
+
+    bool allSpilled = usedRegs.empty();
+
+    *out << "# Total number of webs followed by the listing of the program points of each one\n";
+    *out << "# program points in each web are sorted in ascending order\n";
+    *out << "webs: " << data.webs.size() << "\n";
+    for (int i = 0; i < (int)data.webs.size(); i++) {
+        *out << "web" << i << ": " << formatWeb(data.webs[i]) << "\n";
+    }
+
+    *out << "# Total number of registers used, followed by assignment to webs\n";
+    *out << "registers: " << (allSpilled ? 0 : (int)usedRegs.size()) << "\n";
+
+    if (allSpilled) {
+        for (int i = 0; i < (int)data.webs.size(); i++)
+            *out << "M: web" << i << "\n";
+    } else {
+        // print register assignments (a register can map to multiple webs)
+        for (int r : usedRegs) {
+            for (int i = 0; i < (int)data.webs.size(); i++) {
+                if (!data.webs[i].overflow && data.webs[i].reg == r)
+                    *out << "r" << r << ": web" << i << "\n";
+            }
+        }
+        // print spilled webs
+        for (int i = 0; i < (int)data.webs.size(); i++) {
+            if (data.webs[i].overflow)
+                *out << "M: web" << i << "\n";
+        }
+    }
+}
+
+void Convert::printResults(const Data& data) {
+    // print to console in the same format
+    writeOutput(data, "");
 }

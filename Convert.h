@@ -14,6 +14,8 @@ public:
     static void allocate(Data& data);
     static int Degree(const Web& web, const std::vector<Web>& webs);
     static int findIdx(int id, const std::vector<Web>& webs);
+    static void writeOutput(const Data& data, const std::string& outputFile);
+    static void printResults(const Data& data);
 };
 
 #endif //DAPROJECT2_CONVERT_H
