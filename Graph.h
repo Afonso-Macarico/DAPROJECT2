@@ -11,7 +11,7 @@
 #include <iostream>
 #include <limits>
 #include <algorithm>
-#include "../data_structures/MutablePriorityQueue.h"
+#include "MutablePriorityQueue.h"
 
 
 using namespace std;

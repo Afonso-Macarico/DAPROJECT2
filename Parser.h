@@ -16,6 +16,7 @@ public:
 private:
     bool parseRanges(const std::string& filename, Data& data);
     bool parseRegs(const std::string& filename, Data& data);
+    void mergeRanges(Web& web);
 
     std::vector<std::string> split(const std::string& s, char delimiter);
     std::string trim(const std::string& str);
