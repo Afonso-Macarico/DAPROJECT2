@@ -1,4 +1,6 @@
 #include "Menu.h"
+#include "Convert.h"
+
 void runMenu(Parser parser) {
     int choice = -1;
     Data data;
@@ -46,10 +48,9 @@ void runMenu(Parser parser) {
                 if (!regdone or !rangedone) {
                     std::cerr << "Press Enter to continue"<<std::endl;
                     std::cin.get();
-
                     break;
                 }
-
+                temp.InterferenceGraph = Convert::BuildGraph(data);
                 data = temp;
                 //Checking if the Graph built
 

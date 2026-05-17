@@ -21,5 +21,11 @@ struct Web {
 
     void addRange(const LiveRange& lr){ ranges.push_back(lr);}
     void sortRange(){std::sort(ranges.begin(),ranges.end(), LiveRange::comp);}
+    bool OverlapCheck(const Web& other) const {
+        for (const auto& r1 : ranges)
+            for (const auto& r2 : other.ranges)
+                if (r1.overlaps(r2)) return true;
+        return false;
+    }
 };
 #endif //DAPROJECT2_WEB_H
