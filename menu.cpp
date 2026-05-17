@@ -1,4 +1,4 @@
-#include "Menu.h"
+#include "menu.h"
 #include "Convert.h"
 
 void runMenu(Parser parser) {
@@ -50,7 +50,7 @@ void runMenu(Parser parser) {
                     std::cin.get();
                     break;
                 }
-                temp.InterferenceGraph = Convert::BuildGraph(data);
+                temp.InterferenceGraph = Convert::BuildGraph(temp);
                 data = temp;
                 //Checking if the Graph built
 

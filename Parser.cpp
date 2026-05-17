@@ -47,7 +47,11 @@ void Parser::mergeRanges(Web& web) {
             LiveRange& b = web.ranges[i + 1];
             // merge if touching (a.end == b.start) or overlapping (a.end > b.start)
             if (a.end >= b.start) {
-                a.end = std::max(a.end, b.end);
+                // Combine all points from b into a, then recompute a's bounds
+                for (const auto& p : b.points)
+                    a.points.push_back(p);
+                a.sortAndDedupe();
+                a.recomputeBounds();
                 web.ranges.erase(web.ranges.begin() + i + 1);
                 merged = true;
                 break;
@@ -120,6 +124,12 @@ bool Parser::parseRanges(const std::string& fl, Data& data) {
         line = trim(line);
         if (line.empty() || line[0] == '#') continue;
 
+        // strip inline comments
+        size_t hashPos = line.find('#');
+        if (hashPos != std::string::npos)
+            line = trim(line.substr(0, hashPos));
+        if (line.empty()) continue;
+
         size_t marker = line.find(':');
         if (marker == std::string::npos) continue;
 
@@ -134,28 +144,48 @@ bool Parser::parseRanges(const std::string& fl, Data& data) {
         Web& web = data.webs[webIndex[name]];
 
         // parse comma-separated tokens: "7+", "8", "9", "10-"
+        // Build a vector<Point> for the entire range on this line,
+        // bounded by a '+' (def) token and a '-' (kill) token.
         auto tokens = split(rest, ',');
-        int start = -1;
+
+        bool inRange = false;
+        std::vector<Point> pts;
 
         for (const auto& t : tokens) {
             if (t.empty()) continue;
             char op = t.back();
+
             if (op == '+') {
-                start = std::stoi(t.substr(0, t.size() - 1));
+                // start of a new range segment — flush any open one first
+                if (inRange && !pts.empty()) {
+                    web.addRange(LiveRange(rangeIdCount++, name, pts));
+                    pts.clear();
+                }
+                int lineNum = std::stoi(t.substr(0, t.size() - 1));
+                pts.push_back(Point(lineNum, /*isDef=*/true, /*isKill=*/false));
+                inRange = true;
             }
             else if (op == '-') {
-                int end = std::stoi(t.substr(0, t.size() - 1));
-                if (start == -1) {
+                int lineNum = std::stoi(t.substr(0, t.size() - 1));
+                if (!inRange) {
                     std::cerr << "Warning: range end without start in web: " << name << std::endl;
                     continue;
                 }
-                web.addRange(LiveRange(rangeIdCount++, name, start, end));
-                start = -1;
+                pts.push_back(Point(lineNum, /*isDef=*/false, /*isKill=*/true));
+                web.addRange(LiveRange(rangeIdCount++, name, pts));
+                pts.clear();
+                inRange = false;
             }
-            // plain intermediate tokens: no action needed
+            else {
+                // plain intermediate point — live-through, neither def nor kill
+                if (inRange) {
+                    int lineNum = std::stoi(t);
+                    pts.push_back(Point(lineNum, false, false));
+                }
+            }
         }
 
-        if (start != -1)
+        if (inRange)
             std::cerr << "Warning: unclosed range (missing '-') in web: " << name << std::endl;
     }
 
@@ -163,6 +193,7 @@ bool Parser::parseRanges(const std::string& fl, Data& data) {
     for (auto& w : data.webs) {
         w.sortRange();
         mergeRanges(w);
+        w.rebuildPoints();  // keep allPoints in sync after merges
     }
 
     return true;
