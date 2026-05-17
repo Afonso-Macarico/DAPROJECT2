@@ -46,6 +46,10 @@ void Convert::allocate(Data& data) {
         allocateSplitting(data);
         return;
     }
+    if (data.algorithm == "free") {
+        allocateFree(data);
+        return;
+    }
     // default: basic
     const int K = data.pool.getK();
 
@@ -354,6 +358,108 @@ void Convert::allocateSplitting(Data& data) {
     }
 }
 
+void Convert::allocateFree(Data& data) {
+    const int K = data.pool.getK();
+
+    for (auto& w : data.webs) {
+        w.reg      = -1;
+        w.overflow = false;
+        w.active   = true;
+    }
+
+    // flat list pairing each LiveRange with its parent Web
+    struct RangeEntry {
+        LiveRange* lr;
+        Web*       web;
+    };
+
+    std::vector<RangeEntry> sorted;
+    for (auto& w : data.webs)
+        for (auto& lr : w.ranges)
+            sorted.push_back({&lr, &w});
+
+    std::sort(sorted.begin(), sorted.end(), [](const RangeEntry& a, const RangeEntry& b) {
+        return a.lr->start < b.lr->start;
+    });
+
+    struct ActiveEntry {
+        LiveRange* lr;
+        Web*       web;
+        int        reg;
+    };
+
+    std::vector<ActiveEntry> active;
+    std::vector<bool> freeRegs(K, true);
+
+    for (auto& entry : sorted) {
+        LiveRange* lr  = entry.lr;
+        Web*       web = entry.web;
+
+        // expire ranges that ended before this one starts — gaps are genuinely free
+        std::vector<ActiveEntry> stillActive;
+        for (auto& a : active) {
+            if (a.lr->end < lr->start) {
+                freeRegs[a.reg] = true;
+            } else {
+                stillActive.push_back(a);
+            }
+        }
+        active = stillActive;
+
+        // find a free register
+        int chosen = -1;
+        for (int r = 0; r < K; r++) {
+            if (freeRegs[r]) { chosen = r; break; }
+        }
+
+        if (chosen != -1) {
+            freeRegs[chosen] = false;
+            active.push_back({lr, web, chosen});
+
+            if (web->reg == -1) {
+                web->reg = chosen;
+            } else if (web->reg != chosen) {
+                // two ranges of same web got different registers — spill the web
+                web->overflow = true;
+            }
+
+        } else {
+            // no free register — find active range with furthest end point
+            ActiveEntry* victim = nullptr;
+            for (auto& a : active)
+                if (!victim || a.lr->end > victim->lr->end)
+                    victim = &a;
+
+            if (victim && lr->end < victim->lr->end) {
+                // spill the victim, give its register to current range
+                int freed        = victim->reg;
+                victim->web->reg      = -1;
+                victim->web->overflow = true;
+                active.erase(std::remove_if(active.begin(), active.end(),
+                    [&](const ActiveEntry& a) { return a.lr == victim->lr; }),
+                    active.end());
+
+                freeRegs[freed] = false;
+                active.push_back({lr, web, freed});
+
+                if (web->reg == -1) {
+                    web->reg = freed;
+                } else if (web->reg != freed) {
+                    web->overflow = true;
+                }
+            } else {
+                // current range ends latest — spill its web directly
+                web->overflow = true;
+            }
+        }
+    }
+
+    int spillCount = 0;
+    for (const auto& w : data.webs) if (w.overflow) spillCount++;
+    if (spillCount > 0)
+        std::cerr << "Free (Linear Scan): allocation completed with "
+                  << spillCount << " web(s) spilled to memory." << std::endl;
+}
 // helper: format a single web's ranges as "1+,2,3,4,5,6-" sorted ascending
 static std::string formatWeb(const Web& w) {
     std::string out;
