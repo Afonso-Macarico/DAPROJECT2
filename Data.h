@@ -9,11 +9,13 @@
 #include <vector>
 #include "Web.h"
 #include "RegisterPool.h"
+#include "Graph.h"
 
 struct Data {
     std::vector<Web> webs;
     RegisterPool pool;
     std::string algorithm;
     int algorithmPar = -1;
+    Graph<int> InterferenceGraph;
 };
 #endif //DAPROJECT2_DATA_H
