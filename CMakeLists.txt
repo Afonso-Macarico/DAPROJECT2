@@ -17,6 +17,8 @@ add_executable(DAProject2 main.cpp
         menu.cpp
         menu.h
         Convert.h
-        Convert.cpp)
+        Convert.cpp
+        Point.h
+)
 
 file(COPY Data/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Data/)
