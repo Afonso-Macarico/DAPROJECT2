@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
             std::cerr << "Parsing failed." << std::endl;
             return 1;
         }
-        data.interferenceGraph = Convert::BuildGraph(data);
+        data.InterferenceGraph = Convert::BuildGraph(data);
 
         std::cout << "Running in batch mode with " << Ranges << "and" << Registers << "..." << std::endl;
         return 0;

@@ -105,7 +105,7 @@ bool Parser::parseRanges(const std::string& fl, Data& data) {
 
     // build interference graph: one node per web, edge if any ranges interfere
     for (auto& w : data.webs) {
-        data.interferenceGraph.addVertex(w.id);
+        data.InterferenceGraph.addVertex(w.id);
     }
     for (int i = 0; i < (int)data.webs.size(); i++) {
         for (int j = i+1; j < (int)data.webs.size(); j++) {
@@ -117,8 +117,8 @@ bool Parser::parseRanges(const std::string& fl, Data& data) {
                 if (interfere) break;
             }
             if (interfere) {
-                data.interferenceGraph.addEdge(data.webs[i].id, data.webs[j].id, 1);
-                data.interferenceGraph.addEdge(data.webs[j].id, data.webs[i].id, 1);
+                data.InterferenceGraph.addEdge(data.webs[i].id, data.webs[j].id, 1);
+                data.InterferenceGraph.addEdge(data.webs[j].id, data.webs[i].id, 1);
             }
         }
     }
